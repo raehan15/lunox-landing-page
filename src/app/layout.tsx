@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "../styles/globals.css";
+import { Header } from "@/components/Header";
 
 export const metadata: Metadata = {
   title: "Lunox - Software Development & AI Automation",
@@ -7,6 +8,16 @@ export const metadata: Metadata = {
     "Transform your business with cutting-edge software development and AI automation services. Lunox delivers innovative SaaS solutions that drive growth and efficiency.",
   keywords:
     "software development, AI automation, SaaS, technology solutions, business automation",
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
+  openGraph: {
+    title: "Lunox - Software Development & AI Automation",
+    description:
+      "Transform your business with cutting-edge software development and AI automation services.",
+    images: ["/logo.png"],
+  },
 };
 
 export default function RootLayout({
@@ -28,7 +39,10 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <Header />
+        {children}
+      </body>
     </html>
   );
 }

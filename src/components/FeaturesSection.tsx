@@ -15,9 +15,9 @@ const features = [
   {
     title: "AI-Powered Intelligence",
     description:
-      "Advanced machine learning capabilities built into every solution",
-    metric: "10x",
-    metricLabel: "Efficiency Boost",
+      "Smart automation and intelligent workflows that streamline your business processes",
+    metric: "50%",
+    metricLabel: "Time Saved",
     color: "text-purple-400",
   },
   {
@@ -98,7 +98,7 @@ export function FeaturesSection() {
                 scale: 1.05,
                 transition: { duration: 0.2 },
               }}
-              className="glass-effect rounded-3xl p-8 text-center hover:bg-white/10 transition-all duration-500 group"
+              className="glass-effect rounded-3xl p-8 text-center hover:bg-white/10 transition-all duration-500 group flex flex-col h-full"
             >
               <motion.div
                 initial={{ scale: 0 }}
@@ -122,7 +122,7 @@ export function FeaturesSection() {
                 {feature.title}
               </h3>
 
-              <p className="text-secondary-400 text-sm leading-relaxed">
+              <p className="text-secondary-400 text-sm leading-relaxed flex-grow">
                 {feature.description}
               </p>
 

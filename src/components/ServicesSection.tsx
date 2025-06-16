@@ -13,7 +13,7 @@ const services = [
     features: [
       "Full-Stack Development",
       "Mobile Applications",
-      "Cloud-Native Solutions",
+      "Frontend Frameworks",
       "API Development",
     ],
   },
@@ -31,16 +31,16 @@ const services = [
     ],
   },
   {
-    title: "SaaS Solutions",
+    title: "Cloud Services",
     description:
-      "Scalable software-as-a-service platforms designed to transform how you deliver value to your customers.",
-    icon: "⚡",
+      "Comprehensive cloud infrastructure and migration services to modernize your operations and enhance scalability.",
+    icon: "☁️",
     gradient: "from-emerald-500 to-teal-500",
     features: [
-      "Multi-tenant Architecture",
-      "Real-time Analytics",
-      "Subscription Management",
-      "Global Scaling",
+      "Cloud Migration",
+      "Infrastructure Management",
+      "DevOps & CI/CD",
+      "Cloud Security",
     ],
   },
 ];
@@ -78,7 +78,7 @@ export function ServicesSection() {
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
               transition={{ duration: 0.8, delay: index * 0.2 }}
               whileHover={{ y: -10, scale: 1.02 }}
-              className="glass-effect rounded-3xl p-8 hover:bg-white/15 transition-all duration-300 group"
+              className="glass-effect rounded-3xl p-8 hover:bg-white/15 transition-all duration-300 group flex flex-col h-full"
             >
               <div className="text-6xl mb-6 group-hover:animate-bounce">
                 {service.icon}
@@ -88,11 +88,11 @@ export function ServicesSection() {
                 {service.title}
               </h3>
 
-              <p className="text-secondary-300 mb-6 leading-relaxed">
+              <p className="text-secondary-300 mb-6 leading-relaxed flex-grow">
                 {service.description}
               </p>
 
-              <div className="space-y-3">
+              <div className="space-y-3 mb-8">
                 {service.features.map((feature, idx) => (
                   <motion.div
                     key={feature}
@@ -117,7 +117,7 @@ export function ServicesSection() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`mt-8 w-full py-3 rounded-xl font-semibold bg-gradient-to-r ${service.gradient} text-white hover:shadow-lg transition-all duration-300`}
+                className={`w-full py-3 rounded-xl font-semibold bg-gradient-to-r ${service.gradient} text-white hover:shadow-lg transition-all duration-300 mt-auto`}
               >
                 Learn More
               </motion.button>

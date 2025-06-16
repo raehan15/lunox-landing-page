@@ -130,43 +130,19 @@ export function Footer() {
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
                 <span className="text-primary-400">📧</span>
-                <span className="text-secondary-300">hello@lunox.dev</span>
+                <span className="text-secondary-300">
+                  the.lunox.co@gmail.com
+                </span>
               </div>
               <div className="flex items-center space-x-3">
                 <span className="text-accent-500">📱</span>
-                <span className="text-secondary-300">+1 (555) 123-4567</span>
+                <span className="text-secondary-300">+92 3223344004</span>
               </div>
               <div className="flex items-center space-x-3">
                 <span className="text-emerald-400">🌍</span>
                 <span className="text-secondary-300">Global Operations</span>
               </div>
             </div>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              viewport={{ once: true }}
-              className="mt-6"
-            >
-              <p className="text-sm text-secondary-400 mb-3">
-                Stay updated with our newsletter
-              </p>
-              <div className="flex">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="flex-1 bg-white/10 border border-white/20 rounded-l-lg px-3 py-2 text-sm text-white placeholder-white/60 focus:outline-none focus:border-primary-400"
-                />
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="bg-gradient-to-r from-primary-500 to-accent-500 px-4 py-2 rounded-r-lg text-sm font-semibold text-white hover:from-primary-600 hover:to-accent-600 transition-all duration-300"
-                >
-                  Subscribe
-                </motion.button>
-              </div>
-            </motion.div>
           </motion.div>
         </div>
 

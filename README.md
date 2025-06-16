@@ -67,6 +67,7 @@ src/
 ## 🎨 Design Focus
 
 The landing page emphasizes:
+
 - Impressive 3D animations and scroll effects
 - Software development and AI automation themes
 - Smooth scrolling and interactive elements
