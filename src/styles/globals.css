@@ -43,4 +43,96 @@
       ),
       linear-gradient(180deg, rgba(14, 165, 233, 0.05) 0%, transparent 100%);
   }
+
+  .mobile-hero-bg {
+    @media (max-width: 768px) {
+      background: linear-gradient(
+        135deg,
+        #0f172a 0%,
+        #1e293b 25%,
+        #0f172a 50%,
+        #1e293b 75%,
+        #0f172a 100%
+      ) !important;
+      min-height: 100vh;
+      padding-top: 6rem; /* Space for navbar */
+    }
+  }
+
+  /* Mobile performance optimizations */
+  @media (max-width: 768px) {
+    .mobile-optimized-text {
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      will-change: auto;
+    }
+
+    .mobile-simple-animation {
+      animation-duration: 2s !important;
+      animation-iteration-count: infinite !important;
+    }
+
+    /* Enhanced mobile animations */
+    @keyframes mobileFloat {
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .mobile-float {
+      animation: mobileFloat 3s ease-in-out infinite;
+    }
+  }
+
+  .logo-no-bg {
+    filter: brightness(0) invert(1);
+    mix-blend-mode: screen;
+  }
+
+  .logo-transparent-bg {
+    background: transparent;
+    mix-blend-mode: multiply;
+    filter: contrast(2) brightness(0.8);
+  }
+
+  .logo-white {
+    filter: brightness(0) invert(1) !important;
+  }
+
+  .logo-white-alt {
+    filter: invert(1) grayscale(100%) brightness(2) !important;
+  }
+
+  .navbar-link {
+    @apply relative overflow-hidden;
+    transform: translateZ(0); /* Enable hardware acceleration */
+  }
+
+  .navbar-link::after {
+    content: "";
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600;
+    transition: width 0.3s ease-out;
+  }
+
+  .navbar-link:hover::after {
+    @apply w-full;
+  }
+
+  /* Smooth navbar animations */
+  .navbar-smooth {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+
+  /* Mobile optimized animations */
+  @media (max-width: 768px) {
+    .mobile-optimized {
+      transform: none !important;
+      will-change: auto;
+    }
+  }
 }

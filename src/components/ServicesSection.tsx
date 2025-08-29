@@ -5,42 +5,42 @@ import { useRef } from "react";
 
 const services = [
   {
-    title: "Custom Software Development",
+    title: "Full-Stack Web Development",
     description:
-      "Tailored software solutions that perfectly align with your business needs and scale with your growth.",
+      "Transform your digital presence with custom websites that drive results. From sleek corporate sites to powerful e-commerce platforms, we build secure, responsive, and user-focused solutions using both legacy and cutting-edge technologies.",
     icon: "💻",
     gradient: "from-blue-500 to-cyan-500",
     features: [
-      "Full-Stack Development",
-      "Mobile Applications",
-      "Frontend Frameworks",
-      "API Development",
+      "Custom Website Development",
+      "E-commerce Solutions",
+      "Responsive Design & UX/UI",
+      "Security & Performance Optimization",
     ],
   },
   {
-    title: "AI Automation",
+    title: "AI & Machine Learning",
     description:
-      "Intelligent automation solutions that streamline operations and unlock new possibilities for your business.",
+      "Unlock your data's potential with custom AI solutions that give you a competitive edge. We develop intelligent features that provide actionable insights, automate decision-making, and revolutionize how your business operates.",
     icon: "🤖",
     gradient: "from-purple-500 to-pink-500",
     features: [
-      "Process Automation",
-      "ML Model Development",
-      "Data Analytics",
-      "Intelligent Workflows",
+      "Custom AI/ML Model Development",
+      "Data Analytics & Insights",
+      "Predictive Intelligence",
+      "AI-Powered Business Features",
     ],
   },
   {
-    title: "Cloud Services",
+    title: "Automation & Bots",
     description:
-      "Comprehensive cloud infrastructure and migration services to modernize your operations and enhance scalability.",
-    icon: "☁️",
+      "Eliminate repetitive tasks and boost efficiency with smart automation. Our custom bots and workflows, built on platforms like n8n and Make.com, save time, reduce errors, and free your team to focus on what matters most.",
+    icon: "⚡",
     gradient: "from-emerald-500 to-teal-500",
     features: [
-      "Cloud Migration",
-      "Infrastructure Management",
-      "DevOps & CI/CD",
-      "Cloud Security",
+      "Business Process Automation",
+      "Custom Bot Development",
+      "Workflow Integration (n8n, Make.com)",
+      "Error Reduction & Time Savings",
     ],
   },
 ];
@@ -62,11 +62,12 @@ export function ServicesSection() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
-            Our <span className="gradient-text">Services</span>
+            Solutions That <span className="gradient-text">Drive Growth</span>
           </h2>
           <p className="text-xl text-secondary-300 max-w-3xl mx-auto">
-            Comprehensive technology solutions that empower your business to
-            thrive in the digital age
+            Modernize your business with innovative web development, AI, and
+            automation solutions designed to increase efficiency and accelerate
+            your success
           </p>
         </motion.div>
 
@@ -119,7 +120,11 @@ export function ServicesSection() {
                 whileTap={{ scale: 0.95 }}
                 className={`w-full py-3 rounded-xl font-semibold bg-gradient-to-r ${service.gradient} text-white hover:shadow-lg transition-all duration-300 mt-auto`}
               >
-                Learn More
+                {service.title === "Full-Stack Web Development"
+                  ? "Start Your Project"
+                  : service.title === "AI & Machine Learning"
+                  ? "Explore AI Solutions"
+                  : "Automate Your Business"}
               </motion.button>
             </motion.div>
           ))}
