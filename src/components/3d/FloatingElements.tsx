@@ -30,7 +30,7 @@ export function FloatingLogo() {
         thickness: 2, // Reduced from 3.5
         ior: 1.3,
         chromaticAberration: 0.02, // Reduced from 0.06
-        color: "#8b5cf6",
+        color: "#06b6d4", // Cyan
       };
     }
     return {
@@ -49,7 +49,7 @@ export function FloatingLogo() {
       clearcoat: 1,
       attenuationDistance: 0.5,
       attenuationColor: "#ffffff",
-      color: "#8b5cf6",
+      color: "#06b6d4", // Cyan
     };
   }, []);
 
@@ -101,10 +101,10 @@ export function CodeParticles() {
           ]}
           scale={0.1 + Math.random() * 0.2}
         >
-          <boxGeometry args={[1, 1, 1]} />
+          <octahedronGeometry args={[1, 0]} />
           <meshStandardMaterial
-            color={Math.random() > 0.5 ? "#0ea5e9" : "#8b5cf6"}
-            emissive={Math.random() > 0.5 ? "#0ea5e9" : "#8b5cf6"}
+            color={Math.random() > 0.5 ? "#0ea5e9" : "#06b6d4"} // Blue or Cyan
+            emissive={Math.random() > 0.5 ? "#0ea5e9" : "#06b6d4"}
             emissiveIntensity={isMobile ? 0.1 : 0.3} // Reduced emissive on mobile
           />
         </mesh>

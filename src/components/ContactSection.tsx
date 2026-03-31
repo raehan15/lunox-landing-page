@@ -320,7 +320,7 @@ export function ContactSection() {
                   transition={{ duration: 0.5, delay: 0.6 }}
                   className="flex items-center space-x-4"
                 >
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center">
                     <span className="text-xl">📱</span>
                   </div>
                   <div>

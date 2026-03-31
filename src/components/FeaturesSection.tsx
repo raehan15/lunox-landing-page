@@ -18,7 +18,7 @@ const features = [
       "Smart automation and intelligent workflows that streamline your business processes",
     metric: "50%",
     metricLabel: "Time Saved",
-    color: "text-purple-400",
+    color: "text-cyan-400",
   },
   {
     title: "Seamless Scaling",
@@ -55,8 +55,8 @@ export function FeaturesSection() {
     >
       {/* Animated Background Elements */}
       <motion.div style={{ y }} className="absolute inset-0 opacity-20">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-cyan-500/20 to-teal-500/20 rounded-full blur-3xl"></div>
       </motion.div>
 
       <div className="max-w-7xl mx-auto relative z-10">

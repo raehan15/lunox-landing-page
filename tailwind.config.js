@@ -34,9 +34,9 @@ module.exports = {
           900: "#18181b",
         },
         accent: {
-          500: "#8b5cf6",
-          600: "#7c3aed",
-          700: "#6d28d9",
+          500: "#06b6d4", // Cyan-500
+          600: "#0891b2", // Cyan-600
+          700: "#0e7490", // Cyan-700
         },
       },
       animation: {
@@ -50,8 +50,8 @@ module.exports = {
           "50%": { transform: "translateY(-20px)" },
         },
         glow: {
-          "0%": { boxShadow: "0 0 20px rgba(139, 92, 246, 0.5)" },
-          "100%": { boxShadow: "0 0 30px rgba(139, 92, 246, 0.8)" },
+          "0%": { boxShadow: "0 0 20px rgba(6, 182, 212, 0.5)" }, // Cyan glow
+          "100%": { boxShadow: "0 0 30px rgba(6, 182, 212, 0.8)" }, // Cyan glow
         },
       },
     },

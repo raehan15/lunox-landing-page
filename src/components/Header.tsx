@@ -87,7 +87,7 @@ export function Header() {
 
           {/* CTA Button */}
           <motion.button
-            className="hidden sm:block bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-2.5 rounded-xl text-sm font-semibold text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="hidden sm:block bg-gradient-to-r from-blue-600 to-cyan-600 px-6 py-2.5 rounded-xl text-sm font-semibold text-white hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 shadow-lg hover:shadow-xl"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             transition={{ duration: 0.15 }}

@@ -6,6 +6,8 @@ import {
   OrbitControls,
   Environment,
   PerspectiveCamera,
+  Stars,
+  Sparkles,
 } from "@react-three/drei";
 import { FloatingLogo, CodeParticles } from "./FloatingElements";
 
@@ -45,6 +47,13 @@ function Scene() {
 
       <FloatingLogo />
       <CodeParticles />
+      
+      {!isMobile && (
+        <>
+          <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+          <Sparkles count={50} scale={10} size={4} speed={0.4} opacity={0.5} color="#06b6d4" />
+        </>
+      )}
     </>
   );
 }

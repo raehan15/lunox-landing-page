@@ -9,7 +9,7 @@ const services = [
     description:
       "Transform your digital presence with custom websites that drive results. From sleek corporate sites to powerful e-commerce platforms, we build secure, responsive, and user-focused solutions using both legacy and cutting-edge technologies.",
     icon: "💻",
-    gradient: "from-blue-500 to-cyan-500",
+    gradient: "from-blue-600 to-indigo-600",
     features: [
       "Custom Website Development",
       "E-commerce Solutions",
@@ -22,7 +22,7 @@ const services = [
     description:
       "Unlock your data's potential with custom AI solutions that give you a competitive edge. We develop intelligent features that provide actionable insights, automate decision-making, and revolutionize how your business operates.",
     icon: "🤖",
-    gradient: "from-purple-500 to-pink-500",
+    gradient: "from-cyan-500 to-teal-500",
     features: [
       "Custom AI/ML Model Development",
       "Data Analytics & Insights",
@@ -35,7 +35,7 @@ const services = [
     description:
       "Eliminate repetitive tasks and boost efficiency with smart automation. Our custom bots and workflows, built on platforms like n8n and Make.com, save time, reduce errors, and free your team to focus on what matters most.",
     icon: "⚡",
-    gradient: "from-emerald-500 to-teal-500",
+    gradient: "from-emerald-500 to-green-500",
     features: [
       "Business Process Automation",
       "Custom Bot Development",
