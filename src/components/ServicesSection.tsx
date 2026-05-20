@@ -79,7 +79,7 @@ export function ServicesSection() {
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
               transition={{ duration: 0.8, delay: index * 0.2 }}
               whileHover={{ y: -10, scale: 1.02 }}
-              className="glass-effect rounded-3xl p-8 hover:bg-white/15 transition-all duration-300 group flex flex-col h-full"
+              className="glass-effect rounded-3xl p-8 hover:bg-white/15 transition-colors duration-200 group flex flex-col h-full"
             >
               <div className="text-6xl mb-6 group-hover:animate-bounce">
                 {service.icon}
@@ -118,7 +118,7 @@ export function ServicesSection() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className={`w-full py-3 rounded-xl font-semibold bg-gradient-to-r ${service.gradient} text-white hover:shadow-lg transition-all duration-300 mt-auto`}
+                className={`w-full py-3 rounded-xl font-semibold bg-gradient-to-r ${service.gradient} text-white hover:shadow-lg transition-colors duration-200 mt-auto`}
               >
                 {service.title === "Full-Stack Web Development"
                   ? "Start Your Project"

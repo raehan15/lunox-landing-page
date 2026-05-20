@@ -26,7 +26,7 @@ export function Footer() {
                 href="#"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center text-white hover:shadow-lg transition-all duration-300"
+                className="w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center text-white hover:shadow-lg transition-colors duration-200"
               >
                 📘
               </motion.a>
@@ -34,7 +34,7 @@ export function Footer() {
                 href="#"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center text-white hover:shadow-lg transition-all duration-300"
+                className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center text-white hover:shadow-lg transition-colors duration-200"
               >
                 🐦
               </motion.a>
@@ -42,7 +42,7 @@ export function Footer() {
                 href="#"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center text-white hover:shadow-lg transition-all duration-300"
+                className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center text-white hover:shadow-lg transition-colors duration-200"
               >
                 💼
               </motion.a>

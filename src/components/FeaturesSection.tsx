@@ -98,7 +98,7 @@ export function FeaturesSection() {
                 scale: 1.05,
                 transition: { duration: 0.2 },
               }}
-              className="glass-effect rounded-3xl p-8 text-center hover:bg-white/10 transition-all duration-500 group flex flex-col h-full"
+              className="glass-effect rounded-3xl p-8 text-center hover:bg-white/10 transition-colors duration-200 group flex flex-col h-full"
             >
               <motion.div
                 initial={{ scale: 0 }}

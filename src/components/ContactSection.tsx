@@ -202,7 +202,7 @@ export function ContactSection() {
                 transition={{ duration: 0.5, delay: 0.7 }}
                 whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
                 whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-                className={`w-full py-4 rounded-xl font-semibold transition-all duration-300 mt-auto ${
+                className={`w-full py-4 rounded-xl font-semibold transition-colors duration-200 mt-auto ${
                   isSubmitting
                     ? "bg-secondary-600 cursor-not-allowed"
                     : submitStatus === "success"

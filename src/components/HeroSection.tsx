@@ -76,7 +76,7 @@ export function HeroSection() {
           >
             {/* Get Started button - hidden on mobile */}
             <motion.button
-              className="hidden sm:block w-full sm:w-auto glass-effect px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-base sm:text-lg font-semibold text-white hover:bg-white/20 transition-all duration-300"
+              className="hidden sm:block w-full sm:w-auto glass-effect px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-base sm:text-lg font-semibold text-white hover:bg-white/20 transition-colors duration-200"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               transition={{ duration: 0.15 }}
@@ -86,7 +86,7 @@ export function HeroSection() {
 
             {/* Explore Services button - visible on all screens */}
             <motion.button
-              className="w-full sm:w-auto border-2 border-primary-500 bg-primary-500/10 px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-base sm:text-lg font-semibold text-primary-400 hover:bg-primary-500/20 transition-all duration-300 backdrop-blur-sm"
+              className="w-full sm:w-auto border-2 border-primary-500 bg-primary-500/10 px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-base sm:text-lg font-semibold text-primary-400 hover:bg-primary-500/20 transition-colors duration-200 backdrop-blur-sm"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               transition={{ duration: 0.15 }}
