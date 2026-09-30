@@ -1,114 +1,141 @@
 "use client";
 
-import { useRef, useMemo } from "react";
-import { useFrame } from "@react-three/fiber";
-import { Float, MeshTransmissionMaterial } from "@react-three/drei";
-import { Mesh } from "three";
+import { useRef, useMemo, useEffect } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
+import { MeshTransmissionMaterial } from "@react-three/drei";
+import { Mesh, Group, PointLight } from "three";
+import { motionStore } from "@/lib/motion";
 
-// Detect if device is mobile
-const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+export type SphereSource = "hero" | "cta";
+export type SphereQuality = "high" | "low";
 
-export function FloatingLogo() {
+type SphereProps = {
+  source?: SphereSource;
+  quality?: SphereQuality;
+};
+
+export function GlassSphere({ source = "hero", quality = "high" }: SphereProps) {
   const meshRef = useRef<Mesh>(null);
+  const groupRef = useRef<Group>(null);
+  const time = useRef(0);
 
-  useFrame((state, delta) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += delta * 0.5;
-      meshRef.current.rotation.x = Math.sin(state.clock.elapsedTime) * 0.2;
-    }
-  });
-
-  // Simplified material for mobile
   const materialProps = useMemo(() => {
-    if (isMobile) {
+    if (quality === "low") {
       return {
         backside: true,
-        samples: 4, // Reduced from 16
-        resolution: 256, // Reduced from 512
-        transmission: 0.8, // Slightly reduced
-        roughness: 0.2,
-        thickness: 2, // Reduced from 3.5
-        ior: 1.3,
-        chromaticAberration: 0.02, // Reduced from 0.06
-        color: "#06b6d4", // Cyan
+        samples: 4,
+        resolution: 256,
+        transmission: 0.94,
+        roughness: 0.16,
+        thickness: 1.8,
+        ior: 1.4,
+        chromaticAberration: 0.014,
+        color: "#e8ecf8",
+        attenuationColor: "#c5d0f0",
+        attenuationDistance: 0.8,
       };
     }
     return {
       backside: true,
-      samples: 16,
-      resolution: 512,
+      samples: 10,
+      resolution: 384,
       transmission: 1,
       roughness: 0.1,
-      thickness: 3.5,
-      ior: 1.5,
-      chromaticAberration: 0.06,
+      thickness: 2.8,
+      ior: 1.45,
+      chromaticAberration: 0.03,
       anisotropy: 0.1,
-      distortion: 0.1,
-      distortionScale: 0.3,
-      temporalDistortion: 0.5,
       clearcoat: 1,
-      attenuationDistance: 0.5,
-      attenuationColor: "#ffffff",
-      color: "#06b6d4", // Cyan
+      attenuationDistance: 0.7,
+      attenuationColor: "#d4dcf5",
+      color: "#eef1f8",
     };
-  }, []);
+  }, [quality]);
 
-  return (
-    <Float
-      speed={isMobile ? 1 : 2} // Slower on mobile
-      rotationIntensity={isMobile ? 0.5 : 1}
-      floatIntensity={isMobile ? 1 : 2}
-      floatingRange={[-0.2, 0.2]}
-    >
-      <mesh ref={meshRef} scale={1.5}>
-        <icosahedronGeometry args={[1, isMobile ? 0 : 1]} />
-        <MeshTransmissionMaterial {...materialProps} />
-      </mesh>
-    </Float>
-  );
-}
+  useFrame((_, rawDelta) => {
+    const mesh = meshRef.current;
+    const group = groupRef.current;
+    if (!mesh || !group) return;
+    const delta = Math.min(rawDelta, 0.05);
+    const reduced = motionStore.reduced;
+    const progress = source === "hero" ? motionStore.heroProgress : motionStore.ctaProgress;
 
-export function CodeParticles() {
-  const particlesRef = useRef<Mesh[]>([]);
+    if (!reduced) {
+      time.current += delta;
+      mesh.rotation.y += delta * (0.12 + Math.abs(motionStore.velocity) * 0.004);
+      mesh.rotation.x = Math.sin(time.current * 0.3) * 0.08;
+    }
 
-  // Reduce particle count on mobile
-  const particleCount = isMobile ? 8 : 20;
+    const px = reduced ? 0 : motionStore.pointerX;
+    const py = reduced ? 0 : motionStore.pointerY;
+    // ≤ ~6° tilt toward the pointer, a little parallax drift.
+    group.rotation.x += (py * 0.1 - group.rotation.x) * 0.06;
+    group.rotation.y += (px * 0.1 - group.rotation.y) * 0.06;
 
-  useFrame((state) => {
-    particlesRef.current.forEach((particle: Mesh, i: number) => {
-      if (particle) {
-        // Less frequent updates on mobile
-        const updateFrequency = isMobile ? 0.3 : 1;
-        particle.position.y =
-          Math.sin(state.clock.elapsedTime * updateFrequency + i) * 2;
-        particle.rotation.z = state.clock.elapsedTime * 0.3 * updateFrequency;
-      }
-    });
+    const float = reduced ? 0 : Math.sin(time.current * 0.8) * 0.05;
+    let tx = px * 0.14;
+    let ty = -py * 0.1 + float;
+    let tz = 0;
+    let ts = 1;
+    if (source === "hero") {
+      // Recede into depth as the curtain rises.
+      tz = -progress * 2.2;
+      ty += progress * 0.5;
+      ts = 1 - progress * 0.12;
+    } else {
+      // Arrive from depth as the final scene settles.
+      tz = -(1 - progress) * 1.6;
+      ts = 0.9 + progress * 0.1;
+    }
+    tx = reduced ? 0 : tx;
+    group.position.x += (tx - group.position.x) * 0.06;
+    group.position.y += (ty - group.position.y) * 0.06;
+    group.position.z += (tz - group.position.z) * 0.08;
+    const s = group.scale.x + (ts - group.scale.x) * 0.08;
+    group.scale.setScalar(s);
   });
 
   return (
-    <group>
-      {Array.from({ length: particleCount }, (_, i) => (
-        <mesh
-          key={i}
-          ref={(el) => {
-            if (el) particlesRef.current[i] = el;
-          }}
-          position={[
-            (Math.random() - 0.5) * 20,
-            (Math.random() - 0.5) * 20,
-            (Math.random() - 0.5) * 20,
-          ]}
-          scale={0.1 + Math.random() * 0.2}
-        >
-          <octahedronGeometry args={[1, 0]} />
-          <meshStandardMaterial
-            color={Math.random() > 0.5 ? "#0ea5e9" : "#06b6d4"} // Blue or Cyan
-            emissive={Math.random() > 0.5 ? "#0ea5e9" : "#06b6d4"}
-            emissiveIntensity={isMobile ? 0.1 : 0.3} // Reduced emissive on mobile
-          />
-        </mesh>
-      ))}
+    <group ref={groupRef}>
+      <mesh ref={meshRef} scale={quality === "low" ? 1.3 : 1.5}>
+        <icosahedronGeometry args={[1, quality === "low" ? 0 : 1]} />
+        <MeshTransmissionMaterial {...materialProps} />
+      </mesh>
     </group>
   );
+}
+
+/** Accent light that follows the cursor so reflections slide across the glass. */
+export function PointerLight() {
+  const ref = useRef<PointLight>(null);
+  useFrame(() => {
+    const l = ref.current;
+    if (!l) return;
+    const tx = motionStore.reduced ? -3 : motionStore.pointerX * 4;
+    const ty = motionStore.reduced ? 1.4 : -motionStore.pointerY * 3;
+    l.position.x += (tx - l.position.x) * 0.08;
+    l.position.y += (ty - l.position.y) * 0.08;
+  });
+  return <pointLight ref={ref} position={[-3, 1.4, 2.4]} intensity={1.3} color="#315BFF" />;
+}
+
+export function DisposeOnUnmount() {
+  const { gl, scene } = useThree();
+  useEffect(() => {
+    return () => {
+      scene.traverse((obj) => {
+        // @ts-expect-error geometry may exist
+        if (obj.geometry) obj.geometry.dispose?.();
+        // @ts-expect-error material may exist
+        if (obj.material) {
+          // @ts-expect-error material dispose
+          if (Array.isArray(obj.material)) obj.material.forEach((m) => m.dispose?.());
+          // @ts-expect-error material dispose
+          else obj.material.dispose?.();
+        }
+      });
+      gl.dispose();
+    };
+  }, [gl, scene]);
+  return null;
 }

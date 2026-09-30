@@ -1,112 +1,262 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Hero3D } from "@/components/3d/Hero3D";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { PillButton } from "@/components/ui/Button";
+import { LiquidBlob } from "@/components/ui/LiquidBlob";
+import { MaskLines } from "@/components/ui/Reveal";
+import { hasFinePointer, motionStore } from "@/lib/motion";
+
+const Hero3D = dynamic(
+  () => import("@/components/3d/Hero3D").then((m) => m.Hero3D),
+  { ssr: false, loading: () => <SphereFallback /> }
+);
+
+function SphereFallback() {
+  return (
+    <div className="flex h-full w-full items-center justify-center">
+      <Image
+        src="/sphere-fallback.svg"
+        alt=""
+        width={420}
+        height={420}
+        priority
+        className="h-auto w-[62%] max-w-[400px] opacity-90"
+      />
+    </div>
+  );
+}
 
 export function HeroSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [show3D, setShow3D] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const [reduced, setReduced] = useState(false);
+
+  useEffect(() => {
+    setReduced(motionStore.reduced);
+    if (motionStore.reduced) return;
+    const t = window.setTimeout(() => setShow3D(true), 250);
+    return () => window.clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setVisible(e.isIntersecting), {
+      threshold: 0.01,
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  // Intro: the scene resolves from blur, copy lifts in after the headline.
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || motionStore.reduced) return;
+    const ctx = gsap.context(() => {
+      gsap.from("[data-intro-visual]", {
+        scale: 1.08,
+        filter: "blur(24px)",
+        opacity: 0,
+        duration: 1.8,
+        ease: "expo.out",
+        clearProps: "filter,transform,opacity",
+      });
+      gsap.from("[data-intro]", {
+        y: 22,
+        opacity: 0,
+        duration: 1,
+        ease: "expo.out",
+        stagger: 0.08,
+        delay: 0.45,
+        clearProps: "transform,opacity",
+      });
+      gsap.from("[data-intro-lens]", {
+        scale: 0.6,
+        opacity: 0,
+        duration: 1.6,
+        ease: "expo.out",
+        stagger: 0.12,
+        delay: 0.3,
+        clearProps: "transform,opacity",
+      });
+    }, el);
+    return () => ctx.revert();
+  }, []);
+
+  const onPointerMove = (e: React.PointerEvent<HTMLElement>) => {
+    if (!hasFinePointer() || motionStore.reduced) return;
+    const el = e.currentTarget;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty("--mx", `${e.clientX - r.left}px`);
+    el.style.setProperty("--my", `${e.clientY - r.top}px`);
+    el.style.setProperty("--px", (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
+    el.style.setProperty("--py", (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3));
+  };
+
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden hero-gradient md:hero-gradient mobile-hero-bg pt-24 md:pt-0">
-      {/* 3D Background - Hidden on mobile for better performance */}
-      <div className="hidden md:block">
-        <Hero3D />
-      </div>
+    <section
+      ref={sectionRef}
+      id="hero"
+      data-nav-theme="dark"
+      onPointerMove={onPointerMove}
+      className="relative h-full min-h-[600px] w-full overflow-hidden bg-dark text-dark-text"
+      style={{ ["--mx" as string]: "70%", ["--my" as string]: "40%", ["--px" as string]: 0, ["--py" as string]: 0 }}
+    >
+      {/* Atmosphere — blurs and dims as the next surface arrives. */}
+      <div data-hero-scene className="absolute inset-0 origin-center will-change-[filter,transform]">
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(60% 55% at 72% 42%, rgba(49,91,255,0.16), transparent 70%), radial-gradient(40% 40% at 20% 90%, rgba(255,255,255,0.04), transparent 70%)",
+          }}
+        />
+        <div
+          className="dot-grid absolute inset-0 opacity-60"
+          style={{
+            WebkitMaskImage: "radial-gradient(ellipse 55% 50% at 70% 45%, #000 10%, transparent 72%)",
+            maskImage: "radial-gradient(ellipse 55% 50% at 70% 45%, #000 10%, transparent 72%)",
+          }}
+        />
+        {/* Cursor light */}
+        <div
+          className="absolute inset-0 transition-[background] duration-300"
+          style={{
+            background:
+              "radial-gradient(520px circle at var(--mx) var(--my), rgba(120,145,255,0.10), transparent 65%)",
+          }}
+        />
 
-      {/* Mobile-only animated background */}
-      <div className="absolute inset-0 md:hidden">
-        <div className="absolute inset-0 bg-secondary-900"></div>
+        {/* Sphere stage: positioned by the outer box, moved by scroll + intro on inner layers. */}
+        <div className="absolute left-1/2 top-[7%] aspect-square w-[min(96vw,480px)] -translate-x-1/2 lg:left-auto lg:right-[-3%] lg:top-1/2 lg:w-[min(60vw,800px)] lg:-translate-x-0 lg:-translate-y-1/2">
+          <div data-hero-visual className="relative h-full w-full">
+            <div data-intro-visual className="relative h-full w-full">
+              {/* Bloom behind the glass */}
+              <div
+                className="absolute inset-[14%] rounded-full blur-3xl"
+                style={{
+                  background:
+                    "radial-gradient(circle at 40% 38%, rgba(140,160,255,0.35), rgba(49,91,255,0.12) 45%, transparent 70%)",
+                }}
+              />
+              {/* Slow orbit arc */}
+              <svg
+                className="absolute inset-[6%] h-[88%] w-[88%] animate-spin opacity-70 motion-reduce:animate-none"
+                style={{ animationDuration: "48s" }}
+                viewBox="0 0 100 100"
+                aria-hidden
+              >
+                <circle cx="50" cy="50" r="49.5" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.2" />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="49.5"
+                  fill="none"
+                  stroke="#315BFF"
+                  strokeWidth="0.35"
+                  strokeLinecap="round"
+                  strokeDasharray="22 290"
+                />
+                <circle cx="50" cy="0.5" r="0.9" fill="#315BFF" />
+              </svg>
 
-        {/* Animated floating elements - matching website theme */}
-        <div className="absolute top-20 left-10 w-20 h-20 bg-primary-500/5 rounded-full animate-bounce"></div>
-        <div className="absolute top-40 right-16 w-16 h-16 bg-accent-500/8 rounded-full animate-pulse"></div>
-        <div className="absolute bottom-40 left-20 w-24 h-24 bg-primary-400/6 rounded-full animate-ping"></div>
-        <div className="absolute bottom-60 right-10 w-12 h-12 bg-accent-600/7 rounded-full animate-bounce delay-500"></div>
+              <div className="absolute inset-0">
+                {show3D && !reduced ? <Hero3D source="hero" visible={visible} /> : <SphereFallback />}
+              </div>
 
-        {/* Moving gradient overlays - subtle and matching theme */}
-        <div className="absolute top-0 left-0 w-full h-full opacity-10">
-          <div className="absolute top-1/4 left-1/4 w-48 h-48 bg-gradient-to-r from-primary-500/20 to-accent-500/20 rounded-full blur-xl animate-pulse"></div>
-          <div className="absolute bottom-1/3 right-1/4 w-64 h-64 bg-gradient-to-r from-accent-500/15 to-primary-500/15 rounded-full blur-2xl animate-pulse delay-1000"></div>
+              {/* Floor reflection */}
+              <div
+                className="absolute bottom-[2%] left-1/2 h-[10%] w-[58%] -translate-x-1/2 rounded-[50%] blur-2xl"
+                style={{ background: "radial-gradient(closest-side, rgba(170,185,255,0.22), transparent)" }}
+              />
+              <div className="absolute bottom-[7%] left-[12%] right-[12%] h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+
+              {/* Glass lenses — real backdrop blur over the WebGL canvas, drifting against the pointer. */}
+              <div
+                className="absolute bottom-[10%] left-[4%] h-[34%] w-[34%]"
+                style={{
+                  translate: "calc(var(--px) * -18px) calc(var(--py) * -14px)",
+                  transition: "translate 0.9s cubic-bezier(0.22,1,0.36,1)",
+                }}
+              >
+                <div data-intro-lens className="h-full w-full">
+                  <LiquidBlob className="inset-0" seed={1.3} amp={0.1} speed={0.28} />
+                </div>
+              </div>
+              <div
+                className="absolute right-[10%] top-[8%] h-[16%] w-[16%]"
+                style={{
+                  translate: "calc(var(--px) * 26px) calc(var(--py) * 20px)",
+                  transition: "translate 1.1s cubic-bezier(0.22,1,0.36,1)",
+                }}
+              >
+                <div data-intro-lens className="h-full w-full">
+                  <LiquidBlob className="inset-0" seed={4.1} amp={0.12} speed={0.4} />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Content Overlay */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-        >
-          <motion.h1
-            className="text-4xl sm:text-6xl lg:text-8xl font-bold mb-6"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          >
-            <span className="gradient-text">LUNOX</span>
-          </motion.h1>
+      {/* Copy */}
+      <div className="container-site relative z-10 flex h-full flex-col justify-end pb-[max(3.5rem,8vh)] pt-28 lg:justify-center lg:pb-16">
+        <div className="max-w-[880px]">
+          <p data-intro className="label-mono mb-6 flex items-center gap-3 text-dark-muted">
+            <span className="h-px w-8 bg-accent" aria-hidden />
+            Software + AI engineering
+          </p>
 
-          <motion.p
-            className="text-lg sm:text-2xl lg:text-3xl text-white/90 mb-6 sm:mb-8 max-w-4xl mx-auto"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-          >
-            Transforming businesses with cutting-edge{" "}
-            <span className="text-blue-400 font-semibold">
-              Software Development
-            </span>{" "}
-            & <span className="text-cyan-400 font-semibold">AI Automation</span>
-          </motion.p>
+          <div data-hero-title className="origin-bottom-left will-change-transform">
+            <MaskLines
+              as="h1"
+              trigger="mount"
+              delay={0.15}
+              className="heading text-[46px] leading-[0.96] tracking-[-0.045em] sm:text-[64px] md:text-[80px] lg:text-[96px] xl:text-[112px]"
+              lines={[
+                "We build software",
+                "that moves ideas",
+                <span key="f" className="text-dark-muted">
+                  forward.
+                </span>,
+              ]}
+            />
+          </div>
 
-          <motion.p
-            className="text-base sm:text-xl text-white/70 mb-8 sm:mb-12 max-w-3xl mx-auto"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.7 }}
-          >
-            Unleash the power of next-generation SaaS solutions that drive
-            innovation, boost efficiency, and accelerate your digital
-            transformation journey.
-          </motion.p>
-
-          <motion.div
-            className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center mb-16 md:mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.9 }}
-          >
-            {/* Get Started button - hidden on mobile */}
-            <motion.button
-              className="hidden sm:block w-full sm:w-auto glass-effect px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-base sm:text-lg font-semibold text-white hover:bg-white/20 transition-colors duration-200"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ duration: 0.15 }}
-            >
-              Start Your Transformation
-            </motion.button>
-
-            {/* Explore Services button - visible on all screens */}
-            <motion.button
-              className="w-full sm:w-auto border-2 border-primary-500 bg-primary-500/10 px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-base sm:text-lg font-semibold text-primary-400 hover:bg-primary-500/20 transition-colors duration-200 backdrop-blur-sm"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              transition={{ duration: 0.15 }}
-            >
-              Explore Our Services
-            </motion.button>
-          </motion.div>
-        </motion.div>
+          <div data-hero-copy className="mt-8 md:mt-10">
+            <p data-intro className="mb-9 max-w-[440px] text-[16px] leading-[1.65] text-dark-muted md:text-[17px]">
+              We design and build custom software, intelligent automation and AI-powered systems for
+              problems that off-the-shelf software can&apos;t solve.
+            </p>
+            <div data-intro className="flex flex-wrap items-center gap-3">
+              <PillButton href="#contact" label="Start a conversation" tone="glass" size="md" />
+              <PillButton href="#work" label="Explore our work" tone="outline-dark" size="md" />
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Scroll Indicator - Desktop only */}
-      <motion.div
-        className="hidden md:block absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity }}
+      {/* Scroll cue — fills as the scene transforms. */}
+      <div
+        data-intro
+        className="absolute bottom-8 right-5 z-10 hidden items-end gap-3 sm:right-8 md:flex"
+        aria-hidden
       >
-        <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-white/50 rounded-full mt-2 animate-pulse"></div>
-        </div>
-      </motion.div>
+        <span className="label-mono text-[11px] text-dark-muted [writing-mode:vertical-rl]">Scroll</span>
+        <span className="relative h-16 w-px overflow-hidden bg-white/15">
+          <span
+            className="absolute inset-0 origin-top bg-accent"
+            style={{ transform: "scaleY(var(--hp, 0))" }}
+          />
+        </span>
+      </div>
+
+      <div data-hero-veil className="pointer-events-none absolute inset-0 z-20 bg-dark opacity-0" aria-hidden />
+      <div className="grain z-20" aria-hidden />
     </section>
   );
 }
