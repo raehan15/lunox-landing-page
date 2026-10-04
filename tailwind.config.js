@@ -7,52 +7,40 @@ module.exports = {
   ],
   theme: {
     extend: {
+      maxWidth: {
+        container: "1360px",
+      },
+      fontFamily: {
+        sans: ["var(--font-geist-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        heading: ["var(--font-geist-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        mono: ["var(--font-geist-mono)", "ui-monospace", "monospace"],
+      },
       colors: {
-        border: "hsl(var(--border))",
-        primary: {
-          50: "#f0f9ff",
-          100: "#e0f2fe",
-          200: "#bae6fd",
-          300: "#7dd3fc",
-          400: "#38bdf8",
-          500: "#0ea5e9",
-          600: "#0284c7",
-          700: "#0369a1",
-          800: "#075985",
-          900: "#0c4a6e",
-        },
-        secondary: {
-          50: "#fafafa",
-          100: "#f4f4f5",
-          200: "#e4e4e7",
-          300: "#d4d4d8",
-          400: "#a1a1aa",
-          500: "#71717a",
-          600: "#52525b",
-          700: "#3f3f46",
-          800: "#27272a",
-          900: "#18181b",
-        },
-        accent: {
-          500: "#06b6d4", // Cyan-500
-          600: "#0891b2", // Cyan-600
-          700: "#0e7490", // Cyan-700
-        },
+        dark: "var(--dark)",
+        "dark-2": "var(--dark-2)",
+        "dark-surface": "var(--dark-surface)",
+        "dark-border": "var(--dark-border)",
+        "dark-text": "var(--dark-text)",
+        "dark-muted": "var(--dark-muted)",
+        paper: "var(--paper)",
+        "paper-2": "var(--paper-2)",
+        ink: "var(--ink)",
+        "ink-muted": "var(--ink-muted)",
+        "light-border": "var(--light-border)",
+        accent: "var(--accent)",
+        "accent-soft": "var(--accent-soft)",
       },
-      animation: {
-        float: "float 6s ease-in-out infinite",
-        glow: "glow 2s ease-in-out infinite alternate",
-        "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+      borderRadius: {
+        btn: "14px",
+        card: "20px",
       },
-      keyframes: {
-        float: {
-          "0%, 100%": { transform: "translateY(0px)" },
-          "50%": { transform: "translateY(-20px)" },
-        },
-        glow: {
-          "0%": { boxShadow: "0 0 20px rgba(6, 182, 212, 0.5)" }, // Cyan glow
-          "100%": { boxShadow: "0 0 30px rgba(6, 182, 212, 0.8)" }, // Cyan glow
-        },
+      boxShadow: {
+        soft: "0 8px 30px rgba(17,19,24,.06)",
+        product: "0 24px 60px rgba(5,7,11,.35)",
+      },
+      transitionDuration: {
+        250: "250ms",
+        400: "400ms",
       },
     },
   },

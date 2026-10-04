@@ -1,79 +1,54 @@
 "use client";
 
-import { Canvas } from "@react-three/fiber";
-import { Suspense } from "react";
-import {
-  OrbitControls,
-  Environment,
-  PerspectiveCamera,
-  Stars,
-  Sparkles,
-} from "@react-three/drei";
-import { FloatingLogo, CodeParticles } from "./FloatingElements";
+import { Canvas, useThree } from "@react-three/fiber";
+import { Suspense, useEffect } from "react";
+import { PerspectiveCamera } from "@react-three/drei";
+import { GlassSphere, DisposeOnUnmount, SphereQuality, SphereSource } from "./FloatingElements";
+import { motionStore } from "@/lib/motion";
 
-// Detect if device is mobile
-const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+type Hero3DProps = {
+  source?: SphereSource;
+  visible: boolean;
+  quality?: SphereQuality;
+  reducedMotion?: boolean;
+};
 
-function Scene() {
-  return (
-    <>
-      <PerspectiveCamera makeDefault position={[0, 0, 6]} />
-      <OrbitControls
-        enableZoom={false}
-        enablePan={false}
-        autoRotate
-        autoRotateSpeed={isMobile ? 0.2 : 0.5} // Slower rotation on mobile
-      />
-
-      {/* Simplified lighting for mobile */}
-      {isMobile ? (
-        <>
-          <ambientLight intensity={0.6} />
-          <directionalLight position={[5, 5, 5]} intensity={0.5} />
-        </>
-      ) : (
-        <>
-          <Environment preset="city" />
-          <ambientLight intensity={0.5} />
-          <spotLight
-            position={[10, 10, 10]}
-            angle={0.15}
-            penumbra={1}
-            intensity={1}
-          />
-          <pointLight position={[-10, -10, -10]} intensity={0.5} />
-        </>
-      )}
-
-      <FloatingLogo />
-      <CodeParticles />
-      
-      {!isMobile && (
-        <>
-          <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-          <Sparkles count={50} scale={10} size={4} speed={0.4} opacity={0.5} color="#06b6d4" />
-        </>
-      )}
-    </>
-  );
+/** Stops rendering entirely when off screen, covered by the next section, or the tab is hidden. */
+function FrameGate({ source, visible, reduced }: { source: SphereSource; visible: boolean; reduced: boolean }) {
+  const setFrameloop = useThree((s) => s.setFrameloop);
+  useEffect(() => {
+    const apply = () => {
+      const covered = source === "hero" && motionStore.heroProgress > 0.97;
+      const run = visible && !covered && !document.hidden;
+      setFrameloop(run ? (reduced ? "demand" : "always") : "never");
+    };
+    apply();
+    const id = window.setInterval(apply, 250);
+    document.addEventListener("visibilitychange", apply);
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener("visibilitychange", apply);
+    };
+  }, [source, visible, reduced, setFrameloop]);
+  return null;
 }
 
-export function Hero3D() {
+export function Hero3D({ source = "hero", visible, quality, reducedMotion = false }: Hero3DProps) {
+  const small = typeof window !== "undefined" && window.innerWidth < 768;
+  const q: SphereQuality = quality ?? (small ? "low" : "high");
+
   return (
-    <div className="absolute inset-0 w-full h-full">
+    <div className="h-full w-full" aria-hidden="true">
       <Canvas
-        dpr={isMobile ? [1, 1.5] : [1, 2]} // Lower pixel ratio on mobile
-        performance={{ min: 0.5 }} // Allow lower framerates
-        gl={{
-          powerPreference: isMobile ? "low-power" : "high-performance",
-          antialias: !isMobile, // Disable antialiasing on mobile
-          alpha: true,
-          stencil: false,
-          depth: true,
-        }}
+        gl={{ antialias: q === "high", powerPreference: "high-performance", alpha: true, stencil: false }}
+        dpr={q === "low" ? [1, 1.25] : [1, 1.5]}
+        frameloop="always"
       >
         <Suspense fallback={null}>
-          <Scene />
+          <PerspectiveCamera makeDefault position={[0, 0, 6.4]} fov={45} />
+          <GlassSphere source={source} quality={q} />
+          <FrameGate source={source} visible={visible} reduced={reducedMotion} />
+          <DisposeOnUnmount />
         </Suspense>
       </Canvas>
     </div>

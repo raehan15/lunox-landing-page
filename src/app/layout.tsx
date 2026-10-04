@@ -1,22 +1,25 @@
 import type { Metadata } from "next";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import "../styles/globals.css";
 import { Header } from "@/components/Header";
+import { SmoothScroll } from "@/components/providers/SmoothScroll";
 
 export const metadata: Metadata = {
-  title: "Lunox - Software Development & AI Automation",
+  title: "Lunox — Software & AI Engineering Studio",
   description:
-    "Transform your business with cutting-edge software development and AI automation services. Lunox delivers innovative SaaS solutions that drive growth and efficiency.",
+    "We design and build custom software, intelligent automation and AI-powered systems for problems that off-the-shelf software can't solve.",
   keywords:
-    "software development, AI automation, SaaS, technology solutions, business automation",
+    "software engineering, AI systems, SaaS, automation, machine learning, full-stack development",
   icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
+    icon: "/Logo.svg",
+    apple: "/Logo.svg",
   },
   openGraph: {
-    title: "Lunox - Software Development & AI Automation",
+    title: "Lunox — Software & AI Engineering Studio",
     description:
-      "Transform your business with cutting-edge software development and AI automation services.",
-    images: ["/logo.png"],
+      "We design and build custom software, intelligent automation and AI-powered systems.",
+    images: ["/Logo.svg"],
   },
 };
 
@@ -27,21 +30,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="antialiased">
-        <Header />
-        {children}
+      <body
+        className={`${GeistSans.variable} ${GeistMono.variable} font-sans antialiased`}
+      >
+        <SmoothScroll>
+          <Header />
+          {children}
+        </SmoothScroll>
       </body>
     </html>
   );
