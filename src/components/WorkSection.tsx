@@ -110,8 +110,12 @@ function FeaturedStage({ items }: { items: Project[] }) {
         const s = 1 - Math.min(a, 1) * 0.16;
         const blur = a * 14;
         const op = clamp(1 - a * 1.15, 0, 1);
-        el.style.transform = `translate3d(${x}%, ${Math.abs(d) * 3}%, ${-a * 160}px) rotateY(${-d * 16}deg) scale(${s})`;
-        el.style.filter = blur > 0.2 ? `blur(${blur.toFixed(1)}px)` : "none";
+        // At rest use no transform at all so the mockup is rasterised crisply.
+        el.style.transform =
+          a < 0.002
+            ? "none"
+            : `translate3d(${x}%, ${Math.abs(d) * 3}%, ${-a * 160}px) rotateY(${-d * 16}deg) scale(${s})`;
+        el.style.filter = blur > 0.4 ? `blur(${blur.toFixed(1)}px)` : "none";
         el.style.opacity = op.toFixed(3);
         el.style.visibility = op < 0.01 ? "hidden" : "visible";
         el.style.zIndex = String(10 - Math.round(a * 5));
@@ -120,11 +124,18 @@ function FeaturedStage({ items }: { items: Project[] }) {
       texts.forEach((el, i) => {
         const lines = el.querySelectorAll<HTMLElement>("[data-feat-line]");
         lines.forEach((line, j) => {
-          const d = i - p + (i - p > 0 ? j * 0.07 : -j * 0.04);
+          // Stagger by scaling the distance, so every line is exactly at rest when d = 0.
+          const d = (i - p) * (1 + j * 0.18);
           const a = Math.abs(d);
+          if (a < 0.004) {
+            line.style.transform = "none";
+            line.style.opacity = "1";
+            line.style.filter = "none";
+            return;
+          }
           line.style.transform = `translate3d(0, ${d * 70}px, 0)`;
           line.style.opacity = clamp(1 - a * 2.4, 0, 1).toFixed(3);
-          line.style.filter = a > 0.02 ? `blur(${Math.min(a * 16, 10).toFixed(1)}px)` : "none";
+          line.style.filter = a > 0.03 ? `blur(${Math.min(a * 16, 10).toFixed(1)}px)` : "none";
         });
         el.style.visibility = Math.abs(i - p) > 0.9 ? "hidden" : "visible";
       });
@@ -304,15 +315,13 @@ function FeaturedStage({ items }: { items: Project[] }) {
                     >
                       <PillButton href={`/work/${p.slug}`} label="View case study" tone="solid" size="md" />
                       {p.link ? (
-                        <a
+                        <PillButton
                           href={p.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group inline-flex items-center gap-2 px-2 text-[15px] font-medium text-ink"
-                        >
-                          <span className="link-draw">Visit product</span>
-                          <ArrowIcon className="-rotate-45 text-accent" />
-                        </a>
+                          label="Visit live site"
+                          tone="outline"
+                          size="md"
+                          external
+                        />
                       ) : (
                         <span className="label-mono px-2 text-ink-muted">
                           {p.status === "proprietary" ? "Proprietary" : "Internal"}
@@ -357,12 +366,26 @@ function FeaturedStage({ items }: { items: Project[] }) {
 /* More work: editorial index with a preview that follows the cursor.  */
 /* ------------------------------------------------------------------ */
 
+const MORE_PREVIEW = 3;
+
 function MoreWork() {
   const [filter, setFilter] = useState<WorkFilter>("All");
+  const [expanded, setExpanded] = useState(false);
   const [hovered, setHovered] = useState<Project | null>(null);
-  const filtered = getProjectsByFilter(filter);
   const previewRef = useRef<HTMLDivElement>(null);
   const quick = useRef<{ x: (v: number) => void; y: (v: number) => void } | null>(null);
+
+  // Skip featured (already in the carousel). Prefer live products first.
+  const filtered = getProjectsByFilter(filter)
+    .filter((p) => !p.featured)
+    .slice()
+    .sort((a, b) => Number(!!b.link) - Number(!!a.link));
+  const visible = expanded ? filtered : filtered.slice(0, MORE_PREVIEW);
+  const hiddenCount = Math.max(0, filtered.length - MORE_PREVIEW);
+
+  useEffect(() => {
+    setExpanded(false);
+  }, [filter]);
 
   useEffect(() => {
     const el = previewRef.current;
@@ -404,44 +427,90 @@ function MoreWork() {
       </div>
 
       <ul
-        key={filter}
+        key={`${filter}-${expanded}`}
         className="border-t border-light-border"
         onPointerMove={onMove}
         onMouseLeave={() => setHovered(null)}
       >
-        {filtered.map((p, i) => (
+        {visible.map((p, i) => (
           <li
             key={p.slug}
             className="animate-[fadeUp_0.7s_cubic-bezier(0.16,1,0.3,1)_both] border-b border-light-border"
             style={{ animationDelay: `${i * 45}ms` }}
+            onMouseEnter={() => setHovered(p)}
           >
-            <Link
-              href={`/work/${p.slug}`}
-              onMouseEnter={() => setHovered(p)}
-              onFocus={() => setHovered(null)}
-              className="group relative grid grid-cols-[88px_1fr_auto] items-center gap-4 py-5 md:grid-cols-[48px_1fr_220px_180px_40px] md:gap-6 md:py-7"
-            >
-              <span className="relative aspect-[4/3] w-[88px] overflow-hidden rounded-[10px] border border-light-border md:hidden">
+            <div className="group relative grid grid-cols-[88px_1fr_auto] items-center gap-4 py-5 md:grid-cols-[48px_1fr_minmax(0,1fr)_auto_40px] md:gap-6 md:py-7">
+              <Link
+                href={`/work/${p.slug}`}
+                onFocus={() => setHovered(null)}
+                className="relative aspect-[4/3] w-[88px] overflow-hidden rounded-[10px] border border-light-border md:hidden"
+                aria-label={`${p.title} case study`}
+              >
                 <ProductVisual project={p} />
-              </span>
+              </Link>
               <span className="label-mono hidden text-ink-muted md:block">{pad(i + 1)}</span>
-              <span className="min-w-0">
-                <span className="heading block truncate text-[19px] text-ink transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2 md:text-[28px]">
+              <div className="min-w-0">
+                <Link
+                  href={`/work/${p.slug}`}
+                  className="heading block truncate text-[19px] text-ink transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-2 md:text-[28px]"
+                >
                   {p.title}
-                </span>
+                </Link>
                 <span className="mt-1 block truncate text-[14px] text-ink-muted md:hidden">{p.category}</span>
-              </span>
+              </div>
               <span className="hidden truncate text-[14px] text-ink-muted md:block">{p.category}</span>
-              <span className="hidden truncate font-mono text-[12px] text-ink-muted md:block">
-                {p.stack.slice(0, 2).join(" · ")}
-              </span>
-              <span className="grid h-9 w-9 place-items-center rounded-full border border-light-border text-ink transition-all duration-500 group-hover:-rotate-45 group-hover:border-accent group-hover:bg-accent group-hover:text-white">
+              <div className="flex shrink-0 items-center justify-end gap-3">
+                {p.link ? (
+                  <a
+                    href={p.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group/live inline-flex items-center gap-1.5 font-mono text-[12px] uppercase tracking-[0.08em] text-accent"
+                    aria-label={`Open live site for ${p.title}`}
+                  >
+                    <span className="link-draw">Live</span>
+                    <ArrowIcon className="h-3 w-3 -rotate-45 transition-transform duration-300 group-hover/live:translate-x-0.5 group-hover/live:-translate-y-0.5" plain />
+                  </a>
+                ) : (
+                  <span className="hidden font-mono text-[12px] text-ink-muted md:inline">
+                    {p.status === "proprietary" ? "Proprietary" : "Internal"}
+                  </span>
+                )}
+              </div>
+              <Link
+                href={`/work/${p.slug}`}
+                aria-label={`View ${p.title} case study`}
+                className="grid h-9 w-9 place-items-center rounded-full border border-light-border text-ink transition-all duration-500 group-hover:-rotate-45 group-hover:border-accent group-hover:bg-accent group-hover:text-white"
+              >
                 <ArrowIcon className="h-3.5 w-3.5" plain />
-              </span>
-            </Link>
+              </Link>
+            </div>
           </li>
         ))}
       </ul>
+
+      {hiddenCount > 0 && (
+        <div className="mt-8 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className="group inline-flex items-center gap-3 rounded-full border border-light-border bg-white/70 px-5 py-2.5 text-[14px] font-medium text-ink transition-all duration-300 hover:border-ink/30"
+            aria-expanded={expanded}
+          >
+            {expanded ? "Show less" : `Show ${hiddenCount} more`}
+            <span
+              className={`grid h-7 w-7 place-items-center rounded-full border border-light-border transition-transform duration-500 ${
+                expanded ? "rotate-45" : "group-hover:rotate-90"
+              }`}
+              aria-hidden
+            >
+              <svg className="h-3 w-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6">
+                <path d="M6 1v10M1 6h10" strokeLinecap="round" />
+              </svg>
+            </span>
+          </button>
+        </div>
+      )}
 
       {/* Cursor preview (fine pointers only) */}
       <div

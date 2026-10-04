@@ -1,15 +1,10 @@
 "use client";
 
-import { Canvas } from "@react-three/fiber";
-import { Suspense } from "react";
-import { Environment, PerspectiveCamera } from "@react-three/drei";
-import {
-  GlassSphere,
-  DisposeOnUnmount,
-  PointerLight,
-  SphereQuality,
-  SphereSource,
-} from "./FloatingElements";
+import { Canvas, useThree } from "@react-three/fiber";
+import { Suspense, useEffect } from "react";
+import { PerspectiveCamera } from "@react-three/drei";
+import { GlassSphere, DisposeOnUnmount, SphereQuality, SphereSource } from "./FloatingElements";
+import { motionStore } from "@/lib/motion";
 
 type Hero3DProps = {
   source?: SphereSource;
@@ -18,6 +13,26 @@ type Hero3DProps = {
   reducedMotion?: boolean;
 };
 
+/** Stops rendering entirely when off screen, covered by the next section, or the tab is hidden. */
+function FrameGate({ source, visible, reduced }: { source: SphereSource; visible: boolean; reduced: boolean }) {
+  const setFrameloop = useThree((s) => s.setFrameloop);
+  useEffect(() => {
+    const apply = () => {
+      const covered = source === "hero" && motionStore.heroProgress > 0.97;
+      const run = visible && !covered && !document.hidden;
+      setFrameloop(run ? (reduced ? "demand" : "always") : "never");
+    };
+    apply();
+    const id = window.setInterval(apply, 250);
+    document.addEventListener("visibilitychange", apply);
+    return () => {
+      window.clearInterval(id);
+      document.removeEventListener("visibilitychange", apply);
+    };
+  }, [source, visible, reduced, setFrameloop]);
+  return null;
+}
+
 export function Hero3D({ source = "hero", visible, quality, reducedMotion = false }: Hero3DProps) {
   const small = typeof window !== "undefined" && window.innerWidth < 768;
   const q: SphereQuality = quality ?? (small ? "low" : "high");
@@ -25,18 +40,14 @@ export function Hero3D({ source = "hero", visible, quality, reducedMotion = fals
   return (
     <div className="h-full w-full" aria-hidden="true">
       <Canvas
-        gl={{ antialias: true, powerPreference: "high-performance", alpha: true }}
-        dpr={q === "low" ? [1, 1.25] : [1, 1.6]}
-        frameloop={visible && !reducedMotion ? "always" : "demand"}
+        gl={{ antialias: q === "high", powerPreference: "high-performance", alpha: true, stencil: false }}
+        dpr={q === "low" ? [1, 1.25] : [1, 1.5]}
+        frameloop="always"
       >
         <Suspense fallback={null}>
-          <PerspectiveCamera makeDefault position={[0, 0, 5.2]} />
-          <ambientLight intensity={0.5} />
-          <directionalLight position={[4, 3, 5]} intensity={0.55} color="#ffffff" />
-          <PointerLight />
-          <pointLight position={[3, -2, -2]} intensity={0.3} color="#8aa0ff" />
-          {q === "high" && <Environment preset="city" />}
+          <PerspectiveCamera makeDefault position={[0, 0, 6.4]} fov={45} />
           <GlassSphere source={source} quality={q} />
+          <FrameGate source={source} visible={visible} reduced={reducedMotion} />
           <DisposeOnUnmount />
         </Suspense>
       </Canvas>

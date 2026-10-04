@@ -19,11 +19,11 @@ export function Footer() {
           <div>
             <a href="/" className="inline-flex" aria-label="Lunox home">
               <Image
-                src="/Logo.svg"
+                src="/logo-wordmark.svg"
                 alt="Lunox"
-                width={120}
-                height={30}
-                className="h-7 w-auto logo-on-dark"
+                width={250}
+                height={61}
+                className="h-9 w-auto logo-on-dark"
               />
             </a>
             <p className="mt-4 text-[15px] text-dark-muted">Software + AI engineering</p>

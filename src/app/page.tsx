@@ -57,7 +57,7 @@ export default function Home() {
         .to("[data-hero-visual]", { scale: 0.78, y: 90, duration: 1 }, 0)
         .to(
           "[data-hero-scene]",
-          { filter: "blur(14px) brightness(0.55)", scale: 0.94, duration: 0.75 },
+          { filter: "blur(8px) brightness(0.55)", scale: 0.94, duration: 0.75 },
           0.25
         )
         .to("[data-hero-veil]", { opacity: 0.55, duration: 0.6 }, 0.4);
@@ -86,19 +86,11 @@ export default function Home() {
             {/* Band where the old scene smears as the new surface pushes through it. */}
             <div
               ref={bandRef}
-              className="pointer-events-none absolute inset-x-0 bottom-full h-[42vh] opacity-0 backdrop-blur-[10px]"
-              style={{
-                WebkitMaskImage: "linear-gradient(to top, #000 30%, transparent)",
-                maskImage: "linear-gradient(to top, #000 30%, transparent)",
-              }}
+              className="pointer-events-none absolute inset-x-0 bottom-full h-[36vh] opacity-0"
+              style={{ background: "linear-gradient(to top, rgba(5,7,11,0.7), transparent)" }}
               aria-hidden
             />
-            <LiquidEdge
-              color="var(--paper)"
-              progressRef={curtainProgress}
-              className="h-[16vh] [filter:drop-shadow(0_-24px_40px_rgba(0,0,0,0.35))]"
-              seed={0.6}
-            />
+            <LiquidEdge color="var(--paper)" progressRef={curtainProgress} className="h-[16vh]" seed={0.6} />
           </>
         )}
         <ServicesSection />

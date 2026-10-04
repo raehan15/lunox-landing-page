@@ -57,6 +57,9 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
 
     let vel = 0;
     let written = 0;
+    // Scope the velocity variables to the one section that uses them, so a
+    // change doesn't invalidate styles for the whole document.
+    let velEl: HTMLElement | null = null;
     const tick = (time: number) => {
       lenis.raf(time * 1000);
       const target = clamp(lenis.velocity, -70, 70);
@@ -65,8 +68,8 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       motionStore.velocity = vel;
       if (Math.abs(vel - written) > 0.05 || (vel === 0 && written !== 0)) {
         written = vel;
-        root.style.setProperty("--vskew", (vel * 0.022).toFixed(3));
-        root.style.setProperty("--vlag", (vel * -0.42).toFixed(2));
+        velEl = velEl && velEl.isConnected ? velEl : document.getElementById("stack");
+        velEl?.style.setProperty("--vlag", (vel * -0.42).toFixed(2));
       }
     };
     gsap.ticker.add(tick);
@@ -98,8 +101,7 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       gsap.ticker.remove(tick);
       lenis.destroy();
       delete (window as unknown as { __lenis?: Lenis }).__lenis;
-      root.style.removeProperty("--vskew");
-      root.style.removeProperty("--vlag");
+      document.getElementById("stack")?.style.removeProperty("--vlag");
     };
   }, []);
 

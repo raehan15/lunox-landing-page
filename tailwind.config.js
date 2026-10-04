@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       maxWidth: {
-        container: "1200px",
+        container: "1360px",
       },
       fontFamily: {
         sans: ["var(--font-geist-sans)", "ui-sans-serif", "system-ui", "sans-serif"],

@@ -132,7 +132,8 @@ export function HeroSection() {
         />
 
         {/* Sphere stage: positioned by the outer box, moved by scroll + intro on inner layers. */}
-        <div className="absolute left-1/2 top-[7%] aspect-square w-[min(96vw,480px)] -translate-x-1/2 lg:left-auto lg:right-[-3%] lg:top-1/2 lg:w-[min(60vw,800px)] lg:-translate-x-0 lg:-translate-y-1/2">
+        <div className="container-site pointer-events-none absolute inset-0">
+        <div className="pointer-events-auto absolute left-1/2 top-[10%] aspect-square h-[min(30vh,240px)] -translate-x-1/2 sm:h-[min(34vh,330px)] lg:left-auto lg:right-0 lg:top-1/2 lg:h-auto lg:w-[min(38vw,560px)] lg:translate-x-0 lg:-translate-y-1/2 xl:w-[min(36vw,640px)]">
           <div data-hero-visual className="relative h-full w-full">
             <div data-intro-visual className="relative h-full w-full">
               {/* Bloom behind the glass */}
@@ -143,27 +144,6 @@ export function HeroSection() {
                     "radial-gradient(circle at 40% 38%, rgba(140,160,255,0.35), rgba(49,91,255,0.12) 45%, transparent 70%)",
                 }}
               />
-              {/* Slow orbit arc */}
-              <svg
-                className="absolute inset-[6%] h-[88%] w-[88%] animate-spin opacity-70 motion-reduce:animate-none"
-                style={{ animationDuration: "48s" }}
-                viewBox="0 0 100 100"
-                aria-hidden
-              >
-                <circle cx="50" cy="50" r="49.5" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.2" />
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="49.5"
-                  fill="none"
-                  stroke="#315BFF"
-                  strokeWidth="0.35"
-                  strokeLinecap="round"
-                  strokeDasharray="22 290"
-                />
-                <circle cx="50" cy="0.5" r="0.9" fill="#315BFF" />
-              </svg>
-
               <div className="absolute inset-0">
                 {show3D && !reduced ? <Hero3D source="hero" visible={visible} /> : <SphereFallback />}
               </div>
@@ -201,11 +181,12 @@ export function HeroSection() {
             </div>
           </div>
         </div>
+        </div>
       </div>
 
       {/* Copy */}
-      <div className="container-site relative z-10 flex h-full flex-col justify-end pb-[max(3.5rem,8vh)] pt-28 lg:justify-center lg:pb-16">
-        <div className="max-w-[880px]">
+      <div className="container-site relative z-10 flex h-full flex-col justify-end pb-[max(3rem,7vh)] pt-24 sm:pt-28 lg:justify-center lg:pb-16">
+        <div className="max-w-[880px] lg:max-w-[54%]">
           <p data-intro className="label-mono mb-6 flex items-center gap-3 text-dark-muted">
             <span className="h-px w-8 bg-accent" aria-hidden />
             Software + AI engineering
@@ -216,7 +197,7 @@ export function HeroSection() {
               as="h1"
               trigger="mount"
               delay={0.15}
-              className="heading text-[46px] leading-[0.96] tracking-[-0.045em] sm:text-[64px] md:text-[80px] lg:text-[96px] xl:text-[112px]"
+              className="heading text-[36px] leading-[0.98] tracking-[-0.045em] sm:text-[54px] md:text-[68px] lg:text-[58px] xl:text-[72px] 2xl:text-[84px]"
               lines={[
                 "We build software",
                 "that moves ideas",

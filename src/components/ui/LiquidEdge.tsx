@@ -19,6 +19,7 @@ type LiquidEdgeProps = {
 /**
  * Organic leading edge for a surface that rises over the previous scene.
  * Sits directly above its parent section and shares its fill colour.
+ * It overlaps the section by a few pixels so no seam can show between them.
  */
 export function LiquidEdge({
   color,
@@ -47,11 +48,20 @@ export function LiquidEdge({
       });
     }
 
+    // Only animate while on screen.
+    let visible = false;
+    const io = new IntersectionObserver(([e]) => (visible = e.isIntersecting), {
+      rootMargin: "200px",
+    });
+    io.observe(host);
+
     let smoothed = 0;
     let last = "";
     const tick = () => {
+      if (!visible) return;
       const target = progressRef ? progressRef.current : own.p;
       smoothed += (target - smoothed) * 0.14;
+      if (Math.abs(target - smoothed) < 0.0005) smoothed = target;
       if (motionStore.reduced) smoothed = target;
       const rise = smoothstep(0, 0.22, smoothed);
       const settle = 1 - smoothstep(0.4, 1, smoothed);
@@ -66,6 +76,7 @@ export function LiquidEdge({
     gsap.ticker.add(tick);
     return () => {
       gsap.ticker.remove(tick);
+      io.disconnect();
       st?.kill();
     };
   }, [progressRef, seed]);
@@ -74,15 +85,18 @@ export function LiquidEdge({
     <div
       ref={hostRef}
       className={`pointer-events-none absolute inset-x-0 z-[1] ${className}`}
-      style={{ bottom: "calc(100% - 1px)" }}
+      style={{ bottom: "calc(100% - 3px)" }}
       aria-hidden
     >
       <svg
         className="block h-full w-full"
         viewBox={`0 0 ${EDGE_W} ${EDGE_H}`}
         preserveAspectRatio="none"
+        style={{ overflow: "visible" }}
       >
         <path ref={pathRef} fill={color} d={edgePath(0, seed)} />
+        {/* Solid foot so the shape and the section below are one surface. */}
+        <rect x="0" y={EDGE_H - 1} width={EDGE_W} height="6" fill={color} />
       </svg>
     </div>
   );

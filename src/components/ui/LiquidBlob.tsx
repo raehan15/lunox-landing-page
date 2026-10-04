@@ -61,11 +61,16 @@ export function LiquidBlob({
     );
     io.observe(host);
 
+    let acc = 0;
     const tick = (_time: number, delta: number) => {
       if (!visible) return;
       const phase = phaseRef ? phaseRef.current : 0;
       if (motionStore.reduced && phase === lastPhase) return;
-      if (!motionStore.reduced) t += (Math.min(delta, 50) / 1000) * speed;
+      // The morph is slow, so ~30 updates a second is indistinguishable.
+      acc += delta;
+      if (acc < 33 && phase === lastPhase) return;
+      if (!motionStore.reduced) t += (Math.min(acc, 100) / 1000) * speed;
+      acc = 0;
       lastPhase = phase;
       const d = blobPath(t + phase, { points, amp, seed });
       clipRef.current?.setAttribute("d", d);
