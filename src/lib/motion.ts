@@ -17,6 +17,12 @@ export const motionStore = {
     window.matchMedia("(prefers-reduced-motion: reduce)").matches,
 };
 
+/** Phones in portrait, and phones turned sideways (touch + very short viewport). */
+export const PHONE_QUERY = "(max-width: 767px), (pointer: coarse) and (max-height: 500px)";
+
+export const isPhone = () =>
+  typeof window !== "undefined" && window.matchMedia(PHONE_QUERY).matches;
+
 /** True when the primary input is a mouse/trackpad (hover effects make sense). */
 export const hasFinePointer = () =>
   typeof window !== "undefined" && window.matchMedia("(pointer: fine)").matches;

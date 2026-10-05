@@ -92,9 +92,10 @@ export function StackSection() {
                         onMouseEnter={() => setActive({ col: col.title, name: tool.name, note: tool.note })}
                         onMouseLeave={() => setActive(null)}
                         onFocus={() => setActive({ col: col.title, name: tool.name, note: tool.note })}
+                        onClick={() => setActive({ col: col.title, name: tool.name, note: tool.note })}
                         onBlur={() => setActive(null)}
                         aria-describedby={on ? `stack-note-${i}` : undefined}
-                        className={`glow-border rounded-full border px-3.5 py-2 text-[14px] transition-all duration-300 ${
+                        className={`glow-border min-h-[44px] rounded-full border px-4 py-2 text-[14px] transition-all duration-300 md:min-h-0 md:px-3.5 ${
                           on
                             ? "border-ink bg-ink text-white"
                             : "border-light-border bg-white/70 text-ink hover:-translate-y-0.5"

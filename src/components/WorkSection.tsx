@@ -56,7 +56,7 @@ function FeaturedStage({ items }: { items: Project[] }) {
     const root = rootRef.current;
     if (!root) return;
     const mm = gsap.matchMedia();
-    mm.add("(min-width: 1024px)", () => {
+    mm.add("(min-width: 1024px) and (min-height: 700px)", () => {
       if (motionStore.reduced) return;
       const st = ScrollTrigger.create({
         trigger: root,
@@ -205,7 +205,7 @@ function FeaturedStage({ items }: { items: Project[] }) {
   return (
     <div
       ref={rootRef}
-      className="relative bg-paper lg:flex lg:h-screen lg:items-center"
+      className="relative bg-paper [@media(min-width:1024px)_and_(min-height:700px)]:flex [@media(min-width:1024px)_and_(min-height:700px)]:h-screen [@media(min-width:1024px)_and_(min-height:700px)]:items-center"
       aria-roledescription="carousel"
       aria-label="Featured products"
     >
@@ -344,7 +344,7 @@ function FeaturedStage({ items }: { items: Project[] }) {
                     aria-selected={i === active}
                     aria-label={`Show ${p.title}`}
                     onClick={() => go(i)}
-                    className="group grid h-6 place-items-center"
+                    className="group grid h-11 min-w-[28px] place-items-center"
                   >
                     <span data-feat-dot className="block h-1.5 w-2.5 rounded-full bg-ink/20 transition-colors group-hover:bg-ink/40" />
                   </button>
@@ -387,6 +387,13 @@ function MoreWork() {
     setExpanded(false);
   }, [filter]);
 
+  // After the list grows or shrinks, pinned sections below (Process, etc.)
+  // must recalculate their start/end or they fire mid-page.
+  useEffect(() => {
+    const id = window.setTimeout(() => ScrollTrigger.refresh(), 50);
+    return () => window.clearTimeout(id);
+  }, [expanded, filter]);
+
   useEffect(() => {
     const el = previewRef.current;
     if (!el) return;
@@ -414,7 +421,7 @@ function MoreWork() {
               role="tab"
               aria-selected={filter === f}
               onClick={() => setFilter(f)}
-              className={`rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-all duration-300 ${
+              className={`min-h-[40px] rounded-full border px-4 py-2 text-[13px] font-medium transition-all duration-300 md:min-h-0 md:px-3.5 md:py-1.5 ${
                 filter === f
                   ? "border-ink bg-ink text-white"
                   : "border-light-border bg-transparent text-ink-muted hover:border-ink/30 hover:text-ink"
@@ -494,7 +501,7 @@ function MoreWork() {
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
-            className="group inline-flex items-center gap-3 rounded-full border border-light-border bg-white/70 px-5 py-2.5 text-[14px] font-medium text-ink transition-all duration-300 hover:border-ink/30"
+            className="group inline-flex min-h-[48px] items-center gap-3 rounded-full border border-light-border bg-white/70 px-5 py-2.5 text-[14px] font-medium text-ink transition-all duration-300 hover:border-ink/30"
             aria-expanded={expanded}
           >
             {expanded ? "Show less" : `Show ${hiddenCount} more`}
