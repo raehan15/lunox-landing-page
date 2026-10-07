@@ -1,9 +1,8 @@
 export type ProjectCategory =
   | "AI Products"
   | "Agentic AI"
-  | "ML & Data"
-  | "Full-Stack SaaS"
-  | "Research";
+  | "RAG"
+  | "Full-Stack SaaS";
 
 export type ProjectStatus = "public" | "proprietary" | "internal" | "research";
 
@@ -40,32 +39,36 @@ export interface Project {
 }
 
 /**
- * Canonical Lunox portfolio data.
+ * Canonical Lunox portfolio data. Only products with a working public link.
  * Screenshots: set `image` / `visual` / `previewImage` to a path under /public.
- * Public product URLs are preserved; proprietary work has link: null.
  */
 export const projects: Project[] = [
   {
-    slug: "tattoovisionai",
-    title: "TattooVisionAI",
-    type: "AI Product",
-    category: "AI Products",
-    tagline: "See how a tattoo looks before the needle.",
+    slug: "kitabbot",
+    title: "Kitab Bot",
+    type: "RAG Product",
+    category: "RAG",
+    tagline: "Textbook answers with the page number, for students on every major syllabus.",
     description:
-      "An AI-powered tattoo visualization product that helps people preview designs on their own body before committing to ink.",
+      "Kitab Bot is a production study assistant for students on the Federal, Punjab, Edexcel, and Cambridge syllabi. A student selects the board, class, and subject, asks a question from that textbook, and receives an answer drawn from the book, with the page number. The same page can be opened and checked.",
     overview:
-      "TattooVisionAI combines computer vision and generative design tooling so users can try placements, styles, and compositions in a guided product experience rather than guessing from flat mockups.",
+      "Students use it before an exam for definitions, laws, and numericals, on a phone, without an account. When the evidence is weak, the assistant says the topic is not covered instead of guessing.",
     architecture:
-      "Client application for capture and preview, a model inference path for placement and style transfer, and a delivery layer for design packs and high-resolution assets.",
+      "The system indexes 51 official textbooks, about 13,600 pages. Each page is stored as a semantic embedding and a keyword index. A question is searched in both, limited to the selected book. The two result lists are merged, and a reranker keeps only the pages that match strongly. The answer is written solely from those pages. Repeated questions on the same book are served from a local cache when the wording is effectively the same.",
     features: [
-      "On-body tattoo preview and placement",
-      "AI-assisted design generation and style exploration",
-      "Ready-to-ink design packs with digital delivery",
-      "Product flows for artists and studios",
+      "Board, class, and subject selection across Federal, Punjab, Edexcel, and Cambridge",
+      "Answers drawn from the textbook, with a checkable page number",
+      "Hybrid semantic and keyword retrieval with a reranker",
+      "Says so when a topic is not covered, rather than guessing",
+      "Cache for repeated questions on the same book",
+      "Phone-first, no account needed",
     ],
-    stack: ["Next.js", "TypeScript", "Python", "Computer Vision", "Cloud Inference"],
-    results: [],
-    link: "https://tattoovisionai.com",
+    stack: ["RAG", "Embeddings", "Hybrid Search", "Reranking", "LLMs"],
+    results: [
+      "51 official textbooks indexed, about 13,600 pages",
+      "On questions within the selected textbook, the cited page is correct about 98% of the time",
+    ],
+    link: "https://kitabbot.fly.dev/",
     featured: true,
     status: "public",
     image: null,
@@ -93,32 +96,6 @@ export const projects: Project[] = [
     results: [],
     link: "https://hirey.ai",
     featured: true,
-    status: "public",
-    image: null,
-    visualTreatment: "dashboard",
-  },
-  {
-    slug: "hirey-care",
-    title: "Hirey Multi-Tenant Admin & EVV Platform",
-    type: "Full-Stack Platform",
-    category: "Full-Stack SaaS",
-    tagline: "Multi-tenant admin and EVV for care operations.",
-    description:
-      "A multi-tenant administration and Electronic Visit Verification platform built for care organizations that need reliable operational software, not spreadsheets.",
-    overview:
-      "HireyCare consolidates tenant administration, visit verification flows, and operational tooling into a single platform designed for multi-organization deployment.",
-    architecture:
-      "Multi-tenant SaaS architecture with role-based access, visit verification workflows, and operational dashboards over a shared application core.",
-    features: [
-      "Multi-tenant organization administration",
-      "Electronic Visit Verification workflows",
-      "Role-based access and operational dashboards",
-      "Care operations tooling across tenants",
-    ],
-    stack: ["Next.js", "TypeScript", "PostgreSQL", "Prisma", "AWS"],
-    results: [],
-    link: "https://hireycare.com",
-    featured: false,
     status: "public",
     image: null,
     visualTreatment: "dashboard",
@@ -176,167 +153,50 @@ export const projects: Project[] = [
     visualTreatment: "browser",
   },
   {
-    slug: "urdu-webify",
-    title: "Urdu Webify",
-    type: "Localization Platform",
-    category: "Full-Stack SaaS",
-    tagline: "Urdu-first web experiences without broken typography.",
-    description:
-      "Tooling and product surfaces for building readable, production-grade Urdu web experiences with correct typography and layout behavior.",
-    overview:
-      "Urdu Webify addresses the practical gaps in shipping Urdu interfaces — typography, directionality, and layout — as an engineering product rather than a one-off theme.",
-    features: [
-      "Urdu typography and layout tooling",
-      "RTL-aware interface patterns",
-      "Content workflows for Urdu web products",
-    ],
-    stack: ["Next.js", "TypeScript", "CSS", "Typography Systems"],
-    results: [],
-    link: null,
-    featured: false,
-    status: "internal",
-    image: null,
-    visualTreatment: "multi-panel",
-  },
-  {
-    slug: "legal-rag-assistant",
-    title: "Legal RAG Assistant",
-    type: "AI System",
-    category: "AI Products",
-    tagline: "Document-grounded answers for legal research workflows.",
-    description:
-      "A retrieval-augmented generation system that answers from a controlled legal document corpus with citations and guardrails against unsupported claims.",
-    overview:
-      "Built for teams that need grounded answers from their own materials — not open-ended chat that invents statute or case law.",
-    architecture:
-      "Ingestion and chunking pipeline, vector retrieval, grounded generation with citation surfaces, and evaluation against hallucination-sensitive prompts.",
-    features: [
-      "Private document ingestion and indexing",
-      "Citation-backed retrieval answers",
-      "Prompt and response guardrails",
-      "Reviewable research assistant UX",
-    ],
-    stack: ["Python", "LangChain", "Vector DB", "LLMs", "PostgreSQL"],
-    results: [],
-    link: null,
-    featured: false,
-    status: "proprietary",
-    image: null,
-    visualTreatment: "ai-pipeline",
-  },
-  {
-    slug: "recommendation-engine",
-    title: "Amazon-Scale Recommendation Engine",
-    type: "ML System",
-    category: "ML & Data",
-    tagline: "Recommendation pipelines for large catalog surfaces.",
-    description:
-      "A recommendation system architecture designed for large product catalogs — candidate generation, ranking, and evaluation loops oriented around real retrieval constraints.",
-    overview:
-      "Focuses on the engineering of recommendation at scale: data pipelines, candidate sets, ranking stages, and measurable offline/online evaluation — not a toy demo.",
-    architecture:
-      "Feature and interaction pipelines feeding candidate generation and ranking stages, with evaluation harnesses for offline metrics and iterative model updates.",
-    features: [
-      "Candidate generation and ranking stages",
-      "Feature pipelines over interaction data",
-      "Offline evaluation harnesses",
-      "Iterative model and ranking updates",
-    ],
-    stack: ["Python", "ML Pipelines", "PostgreSQL", "Redis", "Cloud"],
-    results: [],
-    link: null,
-    featured: false,
-    status: "research",
-    image: null,
-    visualTreatment: "technical",
-  },
-  {
-    slug: "video-frame-prediction",
-    title: "Video Frame Prediction",
-    type: "Research System",
-    category: "Research",
-    tagline: "Predicting future frames from temporal visual context.",
-    description:
-      "A research-grade video frame prediction system exploring temporal models that forecast upcoming frames from prior visual context.",
-    features: [
-      "Temporal frame prediction models",
-      "Training and evaluation pipelines",
-      "Visual forecasting experiments",
-    ],
-    stack: ["Python", "PyTorch", "Computer Vision"],
-    results: [],
-    link: null,
-    featured: false,
-    status: "research",
-    image: null,
-    visualTreatment: "technical",
-  },
-  {
-    slug: "ai-medical-diagnostic-chatbot",
-    title: "AI Medical Diagnostic Chatbot",
+    slug: "tattoovisionai",
+    title: "TattooVisionAI",
     type: "AI Product",
     category: "AI Products",
-    tagline: "Structured clinical dialogue with constrained outputs.",
+    tagline: "See how a tattoo looks before the needle.",
     description:
-      "A medical diagnostic conversation system designed for structured intake and constrained recommendations — with clear boundaries around clinical decision support.",
+      "An AI-powered tattoo visualization product that helps people preview designs on their own body before committing to ink.",
+    overview:
+      "TattooVisionAI combines computer vision and generative design tooling so users can try placements, styles, and compositions in a guided product experience rather than guessing from flat mockups.",
+    architecture:
+      "Client application for capture and preview, a model inference path for placement and style transfer, and a delivery layer for design packs and high-resolution assets.",
     features: [
-      "Structured diagnostic dialogue flows",
-      "Constrained model outputs for safety",
-      "Clinician-oriented review surfaces",
+      "On-body tattoo preview and placement",
+      "AI-assisted design generation and style exploration",
+      "Ready-to-ink design packs with digital delivery",
+      "Product flows for artists and studios",
     ],
-    stack: ["Python", "LLMs", "RAG", "Next.js"],
+    stack: ["Next.js", "TypeScript", "Python", "Computer Vision", "Cloud Inference"],
     results: [],
-    link: null,
-    featured: false,
-    status: "proprietary",
+    link: "https://tattoovisionai.com",
+    featured: true,
+    status: "public",
     image: null,
     visualTreatment: "ai-pipeline",
   },
   {
-    slug: "secure-distributed-data-platform",
-    title: "Secure Distributed Data Platform",
-    type: "Infrastructure",
-    category: "ML & Data",
-    tagline: "Air-gapped data infrastructure for constrained environments.",
+    slug: "ideas-foundation",
+    title: "IDEAS Foundation",
+    type: "Web Platform",
+    category: "Full-Stack SaaS",
+    tagline: "The public website for IDEAS Foundation.",
     description:
-      "A secure distributed data platform engineered for air-gapped and high-constraint environments where public cloud assumptions do not apply.",
-    overview:
-      "Proprietary infrastructure work for environments that require isolated deployment, controlled data movement, and hardened operational practices. Client identity and private endpoints are not disclosed.",
-    architecture:
-      "Distributed data services with isolation boundaries, controlled replication, and operational tooling designed for offline or restricted network contexts.",
+      "The public web presence for IDEAS Foundation, built and shipped by Lunox as a live site.",
     features: [
-      "Air-gapped / constrained-network deployment",
-      "Distributed data services with isolation controls",
-      "Hardened operational and access patterns",
+      "Public website live at ideasfoundation.pk",
+      "Responsive layout across phone and desktop",
     ],
-    stack: ["Distributed Systems", "PostgreSQL", "Containers", "Hardened Linux"],
+    stack: ["Next.js", "TypeScript", "Cloud"],
     results: [],
-    link: null,
+    link: "https://www.ideasfoundation.pk/",
     featured: false,
-    status: "proprietary",
+    status: "public",
     image: null,
-    visualTreatment: "technical",
-  },
-  {
-    slug: "deepfake-detection",
-    title: "Deepfake Detection",
-    type: "ML System",
-    category: "ML & Data",
-    tagline: "Detecting synthetic media with model-backed signals.",
-    description:
-      "A deepfake detection system that inspects media for synthetic artifacts and surfaces model-backed confidence signals for human review.",
-    features: [
-      "Media ingestion and preprocessing",
-      "Model-backed synthetic media signals",
-      "Reviewer-facing detection outputs",
-    ],
-    stack: ["Python", "Computer Vision", "ML Inference"],
-    results: [],
-    link: null,
-    featured: false,
-    status: "research",
-    image: null,
-    visualTreatment: "technical",
+    visualTreatment: "browser",
   },
   {
     slug: "finlo",
@@ -380,36 +240,14 @@ export const projects: Project[] = [
     image: "/images/goofy_guesser_main.png",
     visualTreatment: "photo",
   },
-  {
-    slug: "rustagaari-resort",
-    title: "Rustagaari Resort Management",
-    type: "Desktop Application",
-    category: "Full-Stack SaaS",
-    tagline: "Offline-first resort operations on the desktop.",
-    description:
-      "An offline-first resort management desktop application with reservation calendars, invoicing, and local SQLite persistence.",
-    features: [
-      "Interactive room reservation calendar",
-      "Automated invoicing",
-      "Local SQLite offline database",
-    ],
-    stack: ["Electron", "Express.js", "SQLite", "JavaScript"],
-    results: [],
-    link: null,
-    featured: false,
-    status: "internal",
-    image: "/images/resort_main.png",
-    visualTreatment: "photo",
-  },
 ];
 
 export const WORK_FILTERS = [
   "All",
   "AI Products",
   "Agentic AI",
-  "ML & Data",
+  "RAG",
   "Full-Stack SaaS",
-  "Research",
 ] as const;
 
 export type WorkFilter = (typeof WORK_FILTERS)[number];

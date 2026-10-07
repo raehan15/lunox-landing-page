@@ -377,7 +377,7 @@ function MoreWork() {
 
   // Skip featured (already in the carousel). Prefer live products first.
   const filtered = getProjectsByFilter(filter)
-    .filter((p) => !p.featured)
+    .filter((p) => filter !== "All" || !p.featured)
     .slice()
     .sort((a, b) => Number(!!b.link) - Number(!!a.link));
   const visible = expanded ? filtered : filtered.slice(0, MORE_PREVIEW);
