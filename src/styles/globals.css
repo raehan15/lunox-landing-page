@@ -455,3 +455,37 @@
     }
   }
 }
+
+/* ---------- Phones: no 3D scene, compact landscape ---------- */
+
+@media (max-width: 767px), (pointer: coarse) and (max-height: 500px) {
+  .hide-on-phone {
+    display: none !important;
+  }
+  .hero-copy-wrap {
+    justify-content: center !important;
+  }
+  .hero-copy-inner {
+    max-width: 720px !important;
+  }
+}
+
+@media (pointer: coarse) and (max-height: 500px) {
+  .hero-copy-wrap {
+    padding-top: 4.5rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+  .hero-title h1 {
+    font-size: 30px !important;
+    line-height: 1 !important;
+  }
+  .hero-para {
+    margin-bottom: 1rem !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    max-width: 560px !important;
+  }
+  .hero-actions-wrap {
+    margin-top: 1rem !important;
+  }
+}

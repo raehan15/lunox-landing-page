@@ -9,7 +9,7 @@ import { PillButton } from "@/components/ui/Button";
 import { LiquidBlob } from "@/components/ui/LiquidBlob";
 import { LiquidEdge } from "@/components/ui/LiquidEdge";
 import { MaskLines, Reveal } from "@/components/ui/Reveal";
-import { hasFinePointer, motionStore } from "@/lib/motion";
+import { hasFinePointer, isPhone, motionStore } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -33,7 +33,8 @@ export function CtaBand() {
     const io = new IntersectionObserver(
       ([e]) => {
         setVisible(e.isIntersecting);
-        if (e.isIntersecting) setNear(true);
+        // Never mount the 3D scene on phones (portrait or landscape).
+        if (e.isIntersecting && !isPhone() && !motionStore.reduced) setNear(true);
       },
       { rootMargin: "300px" }
     );
@@ -121,7 +122,7 @@ export function CtaBand() {
 
         {/* The sphere returns, quieter, behind the type. */}
         <div
-          className="pointer-events-none absolute left-1/2 top-1/2 aspect-square w-[min(110vw,720px)] -translate-x-1/2 -translate-y-1/2 opacity-60"
+          className="hide-on-phone pointer-events-none absolute left-1/2 top-1/2 aspect-square w-[min(110vw,720px)] -translate-x-1/2 -translate-y-1/2 opacity-60"
           aria-hidden
         >
         <div data-cta-sphere className="relative h-full w-full">

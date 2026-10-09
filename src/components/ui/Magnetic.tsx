@@ -29,6 +29,8 @@ export function Magnetic({
     if (!el) return;
 
     const onMove = (e: PointerEvent) => {
+      // Touch must never nudge a button away from the finger.
+      if (e.pointerType === "touch") return;
       const rect = el.getBoundingClientRect();
       const dx = e.clientX - (rect.left + rect.width / 2);
       const dy = e.clientY - (rect.top + rect.height / 2);

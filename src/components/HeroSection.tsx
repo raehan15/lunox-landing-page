@@ -7,7 +7,7 @@ import gsap from "gsap";
 import { PillButton } from "@/components/ui/Button";
 import { LiquidBlob } from "@/components/ui/LiquidBlob";
 import { MaskLines } from "@/components/ui/Reveal";
-import { hasFinePointer, motionStore } from "@/lib/motion";
+import { PHONE_QUERY, hasFinePointer, motionStore } from "@/lib/motion";
 
 const Hero3D = dynamic(
   () => import("@/components/3d/Hero3D").then((m) => m.Hero3D),
@@ -35,11 +35,26 @@ export function HeroSection() {
   const [visible, setVisible] = useState(true);
   const [reduced, setReduced] = useState(false);
 
+  // The 3D scene is not shown or even downloaded on phones (portrait or landscape).
   useEffect(() => {
     setReduced(motionStore.reduced);
     if (motionStore.reduced) return;
-    const t = window.setTimeout(() => setShow3D(true), 250);
-    return () => window.clearTimeout(t);
+    const mq = window.matchMedia(PHONE_QUERY);
+    let timer = 0;
+    const apply = () => {
+      window.clearTimeout(timer);
+      if (mq.matches) {
+        setShow3D(false);
+        return;
+      }
+      timer = window.setTimeout(() => setShow3D(true), 250);
+    };
+    apply();
+    mq.addEventListener("change", apply);
+    return () => {
+      window.clearTimeout(timer);
+      mq.removeEventListener("change", apply);
+    };
   }, []);
 
   useEffect(() => {
@@ -132,7 +147,7 @@ export function HeroSection() {
         />
 
         {/* Sphere stage: positioned by the outer box, moved by scroll + intro on inner layers. */}
-        <div className="container-site pointer-events-none absolute inset-0">
+        <div className="container-site hide-on-phone pointer-events-none absolute inset-0">
         <div className="pointer-events-auto absolute left-1/2 top-[10%] aspect-square h-[min(30vh,240px)] -translate-x-1/2 sm:h-[min(34vh,330px)] lg:left-auto lg:right-0 lg:top-1/2 lg:h-auto lg:w-[min(38vw,560px)] lg:translate-x-0 lg:-translate-y-1/2 xl:w-[min(36vw,640px)]">
           <div data-hero-visual className="relative h-full w-full">
             <div data-intro-visual className="relative h-full w-full">
@@ -185,14 +200,14 @@ export function HeroSection() {
       </div>
 
       {/* Copy */}
-      <div className="container-site relative z-10 flex h-full flex-col justify-end pb-[max(3rem,7vh)] pt-24 sm:pt-28 lg:justify-center lg:pb-16">
-        <div className="max-w-[880px] lg:max-w-[54%]">
+      <div className="hero-copy-wrap container-site relative z-10 flex h-full flex-col justify-end pb-[max(3rem,7vh)] pt-24 sm:pt-28 lg:justify-center lg:pb-16">
+        <div className="hero-copy-inner max-w-[880px] lg:max-w-[54%]">
           <p data-intro className="label-mono mb-6 flex items-center gap-3 text-dark-muted">
             <span className="h-px w-8 bg-accent" aria-hidden />
             Software + AI engineering
           </p>
 
-          <div data-hero-title className="origin-bottom-left will-change-transform">
+          <div data-hero-title className="hero-title origin-bottom-left will-change-transform">
             <MaskLines
               as="h1"
               trigger="mount"
@@ -208,8 +223,8 @@ export function HeroSection() {
             />
           </div>
 
-          <div data-hero-copy className="mt-8 md:mt-10">
-            <p data-intro className="mb-9 max-w-[440px] text-[16px] leading-[1.65] text-dark-muted md:text-[17px]">
+          <div data-hero-copy className="hero-actions-wrap mt-8 md:mt-10">
+            <p data-intro className="hero-para mb-9 max-w-[440px] text-[16px] leading-[1.65] text-dark-muted md:text-[17px]">
               We design and build custom software, intelligent automation and AI-powered systems for
               problems that off-the-shelf software can&apos;t solve.
             </p>

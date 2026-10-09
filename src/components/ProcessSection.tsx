@@ -161,23 +161,41 @@ export function ProcessSection() {
         return;
       }
 
-      ScrollTrigger.create({
-        trigger: pin,
-        start: "top top",
-        end: `+=${STAGES.length * 65}%`,
-        pin: true,
-        scrub: 0.7,
-        animation: tl,
-        onUpdate: (self) => {
-          let idx = 0;
-          marks.forEach((m, i) => {
-            if (self.progress >= m) idx = i;
-          });
-          if (idx !== activeRef.current) {
-            activeRef.current = idx;
-            setActive(idx);
-          }
-        },
+      const onUpdate = (self: ScrollTrigger) => {
+        let idx = 0;
+        marks.forEach((m, i) => {
+          if (self.progress >= m) idx = i;
+        });
+        if (idx !== activeRef.current) {
+          activeRef.current = idx;
+          setActive(idx);
+        }
+      };
+
+      // Pin only where the whole scene fits on screen. Phones and short
+      // landscape screens scrub the same animation while scrolling normally,
+      // so nothing is ever cut off.
+      const mm = gsap.matchMedia();
+      mm.add("(min-width: 1024px) and (min-height: 700px)", () => {
+        ScrollTrigger.create({
+          trigger: pin,
+          start: "top top",
+          end: `+=${STAGES.length * 65}%`,
+          pin: true,
+          scrub: 0.7,
+          animation: tl,
+          onUpdate,
+        });
+      });
+      mm.add("(max-width: 1023px), (max-height: 699px)", () => {
+        ScrollTrigger.create({
+          trigger: pin,
+          start: "top 65%",
+          end: "bottom 45%",
+          scrub: 0.7,
+          animation: tl,
+          onUpdate,
+        });
       });
     }, pin);
     return () => ctx.revert();
@@ -207,7 +225,7 @@ export function ProcessSection() {
         </div>
       </div>
 
-      <div ref={pinRef} className="flex min-h-screen items-center py-14 md:py-20">
+      <div ref={pinRef} className="flex items-center py-14 md:py-20 [@media(min-width:1024px)_and_(min-height:700px)]:min-h-screen">
         <div className="container-site">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
             <ol className="order-2 lg:order-1 lg:col-span-5 lg:self-center">

@@ -93,9 +93,36 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     window.addEventListener("load", refresh);
     document.fonts?.ready.then(refresh).catch(() => undefined);
 
+    // Any change in page height (Show more, filters, rotation, late images)
+    // moves every pin/scrub start point below it. Re-measure once it settles
+    // so sections like "How we build" never fire early or mid-page.
+    let settle = 0;
+    let lastH = 0;
+    const remeasure = () => {
+      window.clearTimeout(settle);
+      settle = window.setTimeout(() => {
+        lenis.resize();
+        ScrollTrigger.refresh();
+      }, 160);
+    };
+    const ro = new ResizeObserver(() => {
+      const h = document.documentElement.scrollHeight;
+      if (Math.abs(h - lastH) > 2) {
+        lastH = h;
+        remeasure();
+      }
+    });
+    ro.observe(document.body);
+    window.addEventListener("orientationchange", remeasure);
+    window.addEventListener("resize", remeasure);
+
     return () => {
       window.removeEventListener("pointermove", onPointer);
       window.removeEventListener("load", refresh);
+      window.removeEventListener("orientationchange", remeasure);
+      window.removeEventListener("resize", remeasure);
+      window.clearTimeout(settle);
+      ro.disconnect();
       document.removeEventListener("click", onAnchor);
       cancelAnimationFrame(pointerRaf);
       gsap.ticker.remove(tick);
