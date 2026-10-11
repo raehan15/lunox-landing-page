@@ -50,9 +50,31 @@ export default function WorkDetailPage({ params }: Props) {
             {project.tagline}
           </p>
 
-          <div className="mb-16 aspect-[4/3] max-w-5xl overflow-hidden rounded-[22px] border border-ink/10 shadow-[0_40px_90px_-40px_rgba(17,19,24,0.5)] sm:aspect-[16/10] md:rounded-[28px]">
-            <ProductVisual project={project} variant="detail" />
+          <div
+            className={`mb-16 max-w-5xl overflow-hidden rounded-[22px] border border-ink/10 shadow-[0_40px_90px_-40px_rgba(17,19,24,0.5)] md:rounded-[28px] ${
+              project.category === "Mobile"
+                ? "mx-auto aspect-[9/16] w-full max-w-sm sm:max-w-md"
+                : "aspect-[4/3] sm:aspect-[16/10]"
+            }`}
+          >
+            <ProductVisual project={project} variant="detail" priority />
           </div>
+
+          {project.gallery && project.gallery.length > 1 && (
+            <div className="mb-16 grid max-w-5xl grid-cols-1 gap-4 sm:grid-cols-3">
+              {project.gallery.map((src) => (
+                <div
+                  key={src}
+                  className="aspect-[9/16] overflow-hidden rounded-[18px] border border-ink/10 bg-[#0b1220]"
+                >
+                  <ProductVisual
+                    project={{ ...project, image: src, gallery: undefined }}
+                    variant="detail"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="grid grid-cols-1 gap-14 lg:grid-cols-12">
             <div className="space-y-12 lg:col-span-8">
@@ -129,8 +151,17 @@ export default function WorkDetailPage({ params }: Props) {
                 </div>
 
                 {project.link ? (
-                  <PillButton href={project.link} label="Visit product" tone="solid" size="md" external />
-                
+                  <PillButton
+                    href={project.link}
+                    label={
+                      project.category === "Mobile" || project.link.includes("play.google.com")
+                        ? "Get on Google Play"
+                        : "Visit product"
+                    }
+                    tone="solid"
+                    size="md"
+                    external
+                  />
                 ) : (
                   <p className="rounded-btn border border-light-border px-4 py-3 text-center text-[13px] text-ink-muted">
                     {project.status === "proprietary"

@@ -429,13 +429,24 @@ export function ProductVisual({
   project,
   className = "",
   variant = "card",
+  priority = false,
 }: {
   project: Project;
   className?: string;
   variant?: Variant;
+  /** Eager-load only the visible carousel slide */
+  priority?: boolean;
 }) {
   const src = getProjectVisual(project);
   const compose = COMPOSITIONS[project.slug];
+  const portrait = project.category === "Mobile" || (project.gallery?.length ?? 0) > 0;
+  // Request a large enough decoded size so screenshots stay sharp on retina.
+  const sizes =
+    variant === "stage"
+      ? "(max-width: 768px) 100vw, (max-width: 1280px) 70vw, 1100px"
+      : variant === "detail"
+        ? "(max-width: 768px) 100vw, 1200px"
+        : "(max-width: 768px) 160px, 400px";
 
   return (
     <div
@@ -445,18 +456,29 @@ export function ProductVisual({
       aria-hidden
     >
       {src ? (
-        <div className="absolute inset-0 bg-[#e9e6df]">
-          <div className="absolute inset-[6%] overflow-hidden rounded-[1.4cqw] shadow-[0_30px_60px_-30px_rgba(17,19,24,0.5)]" style={layer(8)}>
-            <Image
-              src={src}
-              alt=""
-              fill
-              className="object-cover object-top"
-              sizes={variant === "stage" ? "(max-width: 1024px) 100vw, 60vw" : "(max-width: 768px) 100vw, 480px"}
-            />
+        // object-contain keeps the full screenshot visible inside the card
+        // (object-cover was cropping headlines). Soft pad + matching ground.
+        <div
+          className={`absolute inset-0 flex items-center justify-center ${
+            portrait ? "bg-[#0b1220]" : "bg-[#eceae4]"
+          }`}
+        >
+          <div className="relative h-full w-full p-[3%] sm:p-[3.5%]">
+            <div className="relative h-full w-full overflow-hidden rounded-[1.2cqw] shadow-[0_18px_40px_-24px_rgba(17,19,24,0.45)]">
+              <Image
+                src={src}
+                alt=""
+                fill
+                priority={priority}
+                quality={90}
+                sizes={sizes}
+                className="object-contain object-center"
+              />
+            </div>
           </div>
         </div>
       ) : compose ? (
+        // Kept as a stored fallback when a project has no screenshot yet.
         compose()
       ) : (
         <Generic project={project} />

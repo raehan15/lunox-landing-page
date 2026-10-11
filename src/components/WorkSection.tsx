@@ -228,19 +228,24 @@ function FeaturedStage({ items }: { items: Project[] }) {
               onPointerUp={onPointerUp}
               onPointerCancel={() => (drag.current = null)}
               onPointerMove={onPointerMove}
-              className="relative aspect-[4/3] w-full cursor-grab touch-pan-y select-none active:cursor-grabbing sm:aspect-[16/11]"
+              className="relative aspect-[16/10] w-full cursor-grab touch-pan-y select-none active:cursor-grabbing sm:aspect-[16/9]"
               style={{ perspective: 1600, ["--px" as string]: 0, ["--py" as string]: 0 }}
             >
-              {items.map((p, i) => (
-                <div
-                  key={p.slug}
-                  data-feat-visual
-                  className="absolute inset-0 overflow-hidden rounded-[22px] border border-ink/10 shadow-[0_40px_90px_-40px_rgba(17,19,24,0.55)] will-change-[transform,filter,opacity] md:rounded-[28px]"
-                  style={{ opacity: i === 0 ? 1 : 0, visibility: i === 0 ? "visible" : "hidden" }}
-                >
-                  <ProductVisual project={p} variant="stage" />
-                </div>
-              ))}
+              {items.map((p, i) => {
+                // Mount only the active slide and its neighbours so heavy
+                // screenshots are not all decoded at once.
+                const near = Math.abs(i - active) <= 1;
+                return (
+                  <div
+                    key={p.slug}
+                    data-feat-visual
+                    className="absolute inset-0 overflow-hidden rounded-[22px] border border-ink/10 shadow-[0_40px_90px_-40px_rgba(17,19,24,0.55)] will-change-[transform,filter,opacity] md:rounded-[28px]"
+                    style={{ opacity: i === 0 ? 1 : 0, visibility: i === 0 ? "visible" : "hidden" }}
+                  >
+                    {near ? <ProductVisual project={p} variant="stage" priority={i === active} /> : null}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -289,7 +294,7 @@ function FeaturedStage({ items }: { items: Project[] }) {
                     <p data-feat-line className="mb-4 text-[17px] font-medium text-ink md:text-[18px]">
                       {p.tagline}
                     </p>
-                    <p data-feat-line className="mb-6 text-[15px] leading-[1.7] text-ink-muted">
+                    <p data-feat-line className="mb-6 line-clamp-4 text-[15px] leading-[1.7] text-ink-muted md:line-clamp-6">
                       {p.description}
                     </p>
                     <div data-feat-line className="mb-6 flex flex-wrap gap-1.5">
@@ -317,16 +322,16 @@ function FeaturedStage({ items }: { items: Project[] }) {
                       {p.link ? (
                         <PillButton
                           href={p.link}
-                          label="Visit live site"
+                          label={
+                            p.category === "Mobile" || p.link.includes("play.google.com")
+                              ? "Get the app"
+                              : "Visit live site"
+                          }
                           tone="outline"
                           size="md"
                           external
                         />
-                      ) : (
-                        <span className="label-mono px-2 text-ink-muted">
-                          {p.status === "proprietary" ? "Proprietary" : "Internal"}
-                        </span>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 );
@@ -473,9 +478,13 @@ function MoreWork() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group/live inline-flex items-center gap-1.5 font-mono text-[12px] uppercase tracking-[0.08em] text-accent"
-                    aria-label={`Open live site for ${p.title}`}
+                    aria-label={
+                      p.category === "Mobile"
+                        ? `Open app store listing for ${p.title}`
+                        : `Open live site for ${p.title}`
+                    }
                   >
-                    <span className="link-draw">Live</span>
+                    <span className="link-draw">{p.category === "Mobile" ? "App" : "Live"}</span>
                     <ArrowIcon className="h-3 w-3 -rotate-45 transition-transform duration-300 group-hover/live:translate-x-0.5 group-hover/live:-translate-y-0.5" plain />
                   </a>
                 ) : (
