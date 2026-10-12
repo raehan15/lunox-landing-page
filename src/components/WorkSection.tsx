@@ -35,8 +35,19 @@ function FeaturedStage({ items }: { items: Project[] }) {
   const phase = useRef(0);
   const stRef = useRef<ScrollTrigger | null>(null);
   const [active, setActive] = useState(0);
+  const [mounted, setMounted] = useState(() => new Set([0, 1]));
   const activeRef = useRef(0);
   const drag = useRef<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    setMounted((prev) => {
+      const next = new Set(prev);
+      for (let i = active - 1; i <= active + 1; i++) {
+        if (i >= 0 && i < n) next.add(i);
+      }
+      return next.size === prev.size ? prev : next;
+    });
+  }, [active, n]);
 
   const go = useCallback(
     (i: number) => {
@@ -103,22 +114,29 @@ function FeaturedStage({ items }: { items: Project[] }) {
       last = p;
       phase.current = p * 1.6;
 
+      // Soften 3D + blur on phones so the carousel stays smooth without dropping frames.
+      const soft = !hasFinePointer() || window.innerWidth < 768;
+      const blurK = soft ? 4 : 14;
+      const depthK = soft ? 40 : 160;
+      const rotK = soft ? 6 : 16;
+
       visuals.forEach((el, i) => {
         const d = i - p;
         const a = Math.min(Math.abs(d), 1.4);
-        const x = d * 34;
-        const s = 1 - Math.min(a, 1) * 0.16;
-        const blur = a * 14;
+        const x = d * (soft ? 22 : 34);
+        const s = 1 - Math.min(a, 1) * (soft ? 0.08 : 0.16);
+        const blur = a * blurK;
         const op = clamp(1 - a * 1.15, 0, 1);
         // At rest use no transform at all so the mockup is rasterised crisply.
         el.style.transform =
           a < 0.002
             ? "none"
-            : `translate3d(${x}%, ${Math.abs(d) * 3}%, ${-a * 160}px) rotateY(${-d * 16}deg) scale(${s})`;
-        el.style.filter = blur > 0.4 ? `blur(${blur.toFixed(1)}px)` : "none";
+            : `translate3d(${x}%, ${Math.abs(d) * 3}%, ${-a * depthK}px) rotateY(${-d * rotK}deg) scale(${s})`;
+        el.style.filter = !soft && blur > 0.4 ? `blur(${blur.toFixed(1)}px)` : "none";
         el.style.opacity = op.toFixed(3);
         el.style.visibility = op < 0.01 ? "hidden" : "visible";
         el.style.zIndex = String(10 - Math.round(a * 5));
+        el.style.willChange = op > 0.02 && a > 0.002 ? "transform, opacity" : "auto";
       });
 
       texts.forEach((el, i) => {
@@ -133,14 +151,16 @@ function FeaturedStage({ items }: { items: Project[] }) {
             line.style.filter = "none";
             return;
           }
-          line.style.transform = `translate3d(0, ${d * 70}px, 0)`;
+          line.style.transform = `translate3d(0, ${d * (soft ? 40 : 70)}px, 0)`;
           line.style.opacity = clamp(1 - a * 2.4, 0, 1).toFixed(3);
-          line.style.filter = a > 0.03 ? `blur(${Math.min(a * 16, 10).toFixed(1)}px)` : "none";
+          line.style.filter =
+            !soft && a > 0.03 ? `blur(${Math.min(a * 16, 10).toFixed(1)}px)` : "none";
         });
         el.style.visibility = Math.abs(i - p) > 0.9 ? "hidden" : "visible";
       });
 
-      if (numbers) numbers.style.transform = `translate3d(0, ${-p * 100}%, 0)`;
+      // Each digit is 1em tall; % would be relative to the whole stack height and jump ahead.
+      if (numbers) numbers.style.transform = `translate3d(0, ${(-p).toFixed(4)}em, 0)`;
       if (fill) fill.style.transform = `scaleX(${n > 1 ? (p / (n - 1)).toFixed(4) : 1})`;
       dots.forEach((dot, i) => {
         const w = 1 - Math.min(Math.abs(i - p), 1);
@@ -228,24 +248,20 @@ function FeaturedStage({ items }: { items: Project[] }) {
               onPointerUp={onPointerUp}
               onPointerCancel={() => (drag.current = null)}
               onPointerMove={onPointerMove}
-              className="relative aspect-[16/10] w-full cursor-grab touch-pan-y select-none active:cursor-grabbing sm:aspect-[16/9]"
+              className="relative aspect-[4/3] w-full cursor-grab touch-pan-y select-none active:cursor-grabbing sm:aspect-[16/11]"
               style={{ perspective: 1600, ["--px" as string]: 0, ["--py" as string]: 0 }}
             >
-              {items.map((p, i) => {
-                // Mount only the active slide and its neighbours so heavy
-                // screenshots are not all decoded at once.
-                const near = Math.abs(i - active) <= 1;
-                return (
-                  <div
-                    key={p.slug}
-                    data-feat-visual
-                    className="absolute inset-0 overflow-hidden rounded-[22px] border border-ink/10 shadow-[0_40px_90px_-40px_rgba(17,19,24,0.55)] will-change-[transform,filter,opacity] md:rounded-[28px]"
-                    style={{ opacity: i === 0 ? 1 : 0, visibility: i === 0 ? "visible" : "hidden" }}
-                  >
-                    {near ? <ProductVisual project={p} variant="stage" priority={i === active} /> : null}
-                  </div>
-                );
-              })}
+              {items.map((p, i) => (
+                <div
+                  key={p.slug}
+                  data-feat-visual
+                  className="absolute inset-0 overflow-hidden rounded-[22px] border border-ink/10 shadow-[0_40px_90px_-40px_rgba(17,19,24,0.55)] md:rounded-[28px]"
+                  style={{ opacity: i === 0 ? 1 : 0, visibility: i === 0 ? "visible" : "hidden" }}
+                >
+                  {/* Mount on first visit + keep neighbours warm — avoids loading every slide at once. */}
+                  {mounted.has(i) ? <ProductVisual project={p} variant="stage" /> : null}
+                </div>
+              ))}
             </div>
           </div>
 
@@ -273,6 +289,8 @@ function FeaturedStage({ items }: { items: Project[] }) {
             <div className="grid">
               {items.map((p, i) => {
                 const isActive = i === active;
+                const liveLabel =
+                  p.surface === "mobile" ? "Get on Google Play" : "Visit live site";
                 return (
                   <div
                     key={p.slug}
@@ -286,7 +304,7 @@ function FeaturedStage({ items }: { items: Project[] }) {
                   >
                     <p data-feat-line className="label-mono mb-4 flex items-center gap-2 text-accent">
                       <span className="h-1.5 w-1.5 rounded-full bg-accent" aria-hidden />
-                      {p.category}
+                      {p.surface === "mobile" ? "Mobile App" : p.category}
                     </p>
                     <h3 data-feat-line className="heading mb-3 text-[32px] leading-[1.02] tracking-[-0.04em] text-ink md:text-[44px]">
                       {p.title}
@@ -294,7 +312,7 @@ function FeaturedStage({ items }: { items: Project[] }) {
                     <p data-feat-line className="mb-4 text-[17px] font-medium text-ink md:text-[18px]">
                       {p.tagline}
                     </p>
-                    <p data-feat-line className="mb-6 line-clamp-4 text-[15px] leading-[1.7] text-ink-muted md:line-clamp-6">
+                    <p data-feat-line className="mb-6 text-[15px] leading-[1.7] text-ink-muted">
                       {p.description}
                     </p>
                     <div data-feat-line className="mb-6 flex flex-wrap gap-1.5">
@@ -322,11 +340,7 @@ function FeaturedStage({ items }: { items: Project[] }) {
                       {p.link ? (
                         <PillButton
                           href={p.link}
-                          label={
-                            p.category === "Mobile" || p.link.includes("play.google.com")
-                              ? "Get the app"
-                              : "Visit live site"
-                          }
+                          label={liveLabel}
                           tone="outline"
                           size="md"
                           external
@@ -380,11 +394,8 @@ function MoreWork() {
   const previewRef = useRef<HTMLDivElement>(null);
   const quick = useRef<{ x: (v: number) => void; y: (v: number) => void } | null>(null);
 
-  // Skip featured (already in the carousel). Prefer live products first.
-  const filtered = getProjectsByFilter(filter)
-    .filter((p) => filter !== "All" || !p.featured)
-    .slice()
-    .sort((a, b) => Number(!!b.link) - Number(!!a.link));
+  // Live links only (getter already enforces). Skip featured on All.
+  const filtered = getProjectsByFilter(filter).filter((p) => filter !== "All" || !p.featured);
   const visible = expanded ? filtered : filtered.slice(0, MORE_PREVIEW);
   const hiddenCount = Math.max(0, filtered.length - MORE_PREVIEW);
 
@@ -477,21 +488,17 @@ function MoreWork() {
                     href={p.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group/live inline-flex items-center gap-1.5 font-mono text-[12px] uppercase tracking-[0.08em] text-accent"
+                    className="group/live inline-flex min-h-[44px] items-center gap-1.5 font-mono text-[12px] uppercase tracking-[0.08em] text-accent md:min-h-0"
                     aria-label={
-                      p.category === "Mobile"
-                        ? `Open app store listing for ${p.title}`
+                      p.surface === "mobile"
+                        ? `Open ${p.title} on Google Play`
                         : `Open live site for ${p.title}`
                     }
                   >
-                    <span className="link-draw">{p.category === "Mobile" ? "App" : "Live"}</span>
+                    <span className="link-draw">{p.surface === "mobile" ? "Play" : "Live"}</span>
                     <ArrowIcon className="h-3 w-3 -rotate-45 transition-transform duration-300 group-hover/live:translate-x-0.5 group-hover/live:-translate-y-0.5" plain />
                   </a>
-                ) : (
-                  <span className="hidden font-mono text-[12px] text-ink-muted md:inline">
-                    {p.status === "proprietary" ? "Proprietary" : "Internal"}
-                  </span>
-                )}
+                ) : null}
               </div>
               <Link
                 href={`/work/${p.slug}`}

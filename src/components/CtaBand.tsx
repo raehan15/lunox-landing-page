@@ -2,13 +2,20 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PillButton } from "@/components/ui/Button";
 import { LiquidBlob } from "@/components/ui/LiquidBlob";
 import { LiquidEdge } from "@/components/ui/LiquidEdge";
 import { MaskLines, Reveal } from "@/components/ui/Reveal";
+import {
+  CONTACT_EMAIL,
+  CONTACT_PHONE_DISPLAY,
+  mailtoHref,
+  telHref,
+  whatsappHref,
+} from "@/lib/contact";
 import { hasFinePointer, isPhone, motionStore } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -18,13 +25,33 @@ const Hero3D = dynamic(() => import("@/components/3d/Hero3D").then((m) => m.Hero
   loading: () => null,
 });
 
-const MAILTO = "mailto:the.lunox.co@gmail.com?subject=Start%20a%20conversation%20with%20Lunox";
+const WHATSAPP = whatsappHref("Hi Lunox — I'd like to start a conversation about a project.");
+const TEL = telHref();
 
 export function CtaBand() {
   const sectionRef = useRef<HTMLElement>(null);
   const [near, setNear] = useState(false);
   const [visible, setVisible] = useState(false);
   const [reduced, setReduced] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const body = [
+      name.trim() ? `Name: ${name.trim()}` : null,
+      email.trim() ? `Email: ${email.trim()}` : null,
+      "",
+      message.trim() || "(no message)",
+    ]
+      .filter((line): line is string => line !== null)
+      .join("\n");
+    window.location.href = mailtoHref({
+      subject: "Start a conversation with Lunox",
+      body,
+    });
+  };
 
   useEffect(() => {
     setReduced(motionStore.reduced);
@@ -158,11 +185,79 @@ export function CtaBand() {
               Tell us what you&apos;re trying to build, automate or improve.
             </p>
           </Reveal>
-          <Reveal kind="depth" delay={0.3} className="mt-12 flex flex-col items-center gap-6">
-            <PillButton href={MAILTO} label="Start a conversation" tone="glass" size="lg" />
-            <a href="mailto:the.lunox.co@gmail.com" className="link-draw font-mono text-[14px] text-dark-muted transition-colors hover:text-dark-text">
-              the.lunox.co@gmail.com
-            </a>
+          <Reveal kind="depth" delay={0.3} className="mx-auto mt-12 w-full max-w-lg text-left">
+            <form
+              onSubmit={onSubmit}
+              className="glass-panel-dark space-y-4 rounded-[22px] border border-white/10 p-5 md:p-7"
+              noValidate
+            >
+              <label className="block">
+                <span className="label-mono mb-2 block text-[11px] text-dark-muted">Name</span>
+                <input
+                  type="text"
+                  name="name"
+                  autoComplete="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="min-h-[48px] w-full rounded-full border border-white/10 bg-white/[0.04] px-4 text-[15px] text-dark-text outline-none transition-colors placeholder:text-dark-muted/60 focus:border-accent/50"
+                  placeholder="Your name"
+                />
+              </label>
+              <label className="block">
+                <span className="label-mono mb-2 block text-[11px] text-dark-muted">Email</span>
+                <input
+                  type="email"
+                  name="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="min-h-[48px] w-full rounded-full border border-white/10 bg-white/[0.04] px-4 text-[15px] text-dark-text outline-none transition-colors placeholder:text-dark-muted/60 focus:border-accent/50"
+                  placeholder="you@company.com"
+                />
+              </label>
+              <label className="block">
+                <span className="label-mono mb-2 block text-[11px] text-dark-muted">What are you building?</span>
+                <textarea
+                  name="message"
+                  rows={4}
+                  required
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  className="w-full resize-y rounded-[18px] border border-white/10 bg-white/[0.04] px-4 py-3 text-[15px] text-dark-text outline-none transition-colors placeholder:text-dark-muted/60 focus:border-accent/50"
+                  placeholder="A short note about the product, system, or problem."
+                />
+              </label>
+              <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:flex-wrap sm:items-center">
+                <button type="submit" className="pill pill-glass pill-lg group w-full sm:w-auto">
+                  <span className="pill-light" aria-hidden />
+                  <span className="pill-label">
+                    <span className="pill-roll" data-text="Send message">
+                      Send message
+                    </span>
+                  </span>
+                  <span className="pill-orb" aria-hidden>
+                    <svg className="h-[15px] w-[15px]" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6">
+                      <path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                </button>
+                <PillButton href={WHATSAPP} label="WhatsApp" tone="outline-dark" size="md" external magnetic={false} />
+                <PillButton href={TEL} label="Call" tone="outline-dark" size="md" magnetic={false} />
+              </div>
+              <p className="pt-1 text-center font-mono text-[12px] leading-relaxed text-dark-muted sm:text-left">
+                Email{" "}
+                <a href={mailtoHref()} className="link-draw text-dark-text">
+                  {CONTACT_EMAIL}
+                </a>
+                <span className="mx-2 text-white/20" aria-hidden>
+                  ·
+                </span>
+                <a href={TEL} className="link-draw text-dark-text">
+                  {CONTACT_PHONE_DISPLAY}
+                </a>
+              </p>
+            </form>
           </Reveal>
         </div>
         <div className="grain" aria-hidden />

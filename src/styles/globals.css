@@ -456,6 +456,15 @@
   }
 }
 
+/* Skip layout/paint for off-screen sections that are NOT ScrollTrigger-pinned.
+   Never apply this to #work / #process / #systems — pin start points go stale. */
+#services,
+#stack,
+#contact {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 800px;
+}
+
 /* ---------- Phones: no 3D scene, compact landscape ---------- */
 
 @media (max-width: 767px), (pointer: coarse) and (max-height: 500px) {
