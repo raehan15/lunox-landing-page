@@ -6,6 +6,8 @@ export type ProjectCategory =
 
 export type ProjectStatus = "public" | "proprietary" | "internal" | "research";
 
+export type ProjectSurface = "web" | "mobile";
+
 export type VisualTreatment =
   | "browser"
   | "dashboard"
@@ -29,8 +31,12 @@ export interface Project {
   link: string | null;
   featured: boolean;
   status: ProjectStatus;
+  /** web product vs native / store app — drives stage framing and CTA copy */
+  surface?: ProjectSurface;
   /** Preferred preview image path — replace with a real screenshot when available */
   image?: string | null;
+  /** Extra screenshots for mobile stages (phone frames) */
+  gallery?: string[];
   /** Alias for image */
   visual?: string | null;
   /** Alias for image */
@@ -39,8 +45,8 @@ export interface Project {
 }
 
 /**
- * Canonical Lunox portfolio data. Only products with a working public link.
- * Screenshots: set `image` / `visual` / `previewImage` to a path under /public.
+ * Live catalogue — only entries with a working public link are shown.
+ * Screenshots: set `image` / `gallery` to paths under /public.
  */
 export const projects: Project[] = [
   {
@@ -71,6 +77,7 @@ export const projects: Project[] = [
     link: "https://kitabbot.fly.dev/",
     featured: true,
     status: "public",
+    surface: "web",
     image: null,
     visualTreatment: "ai-pipeline",
   },
@@ -97,6 +104,7 @@ export const projects: Project[] = [
     link: "https://hirey.ai",
     featured: true,
     status: "public",
+    surface: "web",
     image: null,
     visualTreatment: "dashboard",
   },
@@ -123,6 +131,7 @@ export const projects: Project[] = [
     link: "https://estimatrix.io",
     featured: true,
     status: "public",
+    surface: "web",
     image: null,
     visualTreatment: "browser",
   },
@@ -149,6 +158,7 @@ export const projects: Project[] = [
     link: "https://moqah.pk/",
     featured: true,
     status: "public",
+    surface: "web",
     image: null,
     visualTreatment: "browser",
   },
@@ -175,8 +185,42 @@ export const projects: Project[] = [
     link: "https://tattoovisionai.com",
     featured: true,
     status: "public",
+    surface: "web",
     image: null,
     visualTreatment: "ai-pipeline",
+  },
+  {
+    slug: "preptra",
+    title: "PrepTra",
+    type: "Mobile App",
+    category: "AI Products",
+    tagline: "Crack the CSS exam code with 25 years of past-paper analysis.",
+    description:
+      "PrepTra is an Android CSS exam prep app. It turns papers from 2000–2025 into recurring topics, repeated questions and theme patterns, then builds Easy / Medium / Hard MCQ practice with instant feedback — so students practise what examiners actually ask.",
+    overview:
+      "Instead of reading paper after paper without direction, PrepTra shows historical patterns across compulsory and optional CSS subjects, then lets students drill AI MCQs at their current level on a phone.",
+    architecture:
+      "Past-paper corpus and topic-frequency analysis feed subject screens for Insights, Past Papers, Mock Tests and Revision Notes. Practice MCQs are generated for selected subjects and themes, with answer review and progress tracking. Distributed on Google Play.",
+    features: [
+      "CSS past papers from 2000–2025 with recurring topics and themes",
+      "AI MCQ practice at Easy, Medium and Hard",
+      "Instant feedback on correct and incorrect answers",
+      "Compulsory and optional CSS subjects",
+      "Curated research papers, videos and PDFs alongside practice",
+    ],
+    stack: ["Android", "AI MCQs", "Past-paper Analysis", "Google Play"],
+    results: [],
+    link: "https://play.google.com/store/apps/details?id=com.preptra.app",
+    featured: true,
+    status: "public",
+    surface: "mobile",
+    image: "/images/products/preptra-1.jpg",
+    gallery: [
+      "/images/products/preptra-1.jpg",
+      "/images/products/preptra-2.jpg",
+      "/images/products/preptra-3.jpg",
+    ],
+    visualTreatment: "photo",
   },
   {
     slug: "ideas-foundation",
@@ -195,6 +239,7 @@ export const projects: Project[] = [
     link: "https://www.ideasfoundation.pk/",
     featured: false,
     status: "public",
+    surface: "web",
     image: null,
     visualTreatment: "browser",
   },
@@ -216,6 +261,7 @@ export const projects: Project[] = [
     link: "https://finlo-wallet.vercel.app/",
     featured: false,
     status: "public",
+    surface: "web",
     image: "/images/finlo_main.png",
     visualTreatment: "photo",
   },
@@ -237,7 +283,184 @@ export const projects: Project[] = [
     link: "https://goofy-guesser-game.vercel.app/",
     featured: false,
     status: "public",
+    surface: "web",
     image: "/images/goofy_guesser_main.png",
+    visualTreatment: "photo",
+  },
+];
+
+/**
+ * Kept in the repo but not rendered on the site until they have a live link
+ * (or we deliberately re-feature them).
+ */
+export const archivedProjects: Project[] = [
+  {
+    slug: "hirey-care",
+    title: "Hirey Multi-Tenant Admin & EVV Platform",
+    type: "Full-Stack Platform",
+    category: "Full-Stack SaaS",
+    tagline: "Multi-tenant admin and EVV for care operations.",
+    description:
+      "A multi-tenant administration and Electronic Visit Verification platform built for care organizations that need reliable operational software, not spreadsheets.",
+    features: [
+      "Multi-tenant organization administration",
+      "Electronic Visit Verification workflows",
+      "Role-based access and operational dashboards",
+    ],
+    stack: ["Next.js", "TypeScript", "PostgreSQL", "Prisma", "AWS"],
+    results: [],
+    link: "https://hireycare.com",
+    featured: false,
+    status: "public",
+    surface: "web",
+    image: null,
+    visualTreatment: "dashboard",
+  },
+  {
+    slug: "urdu-webify",
+    title: "Urdu Webify",
+    type: "Localization Platform",
+    category: "Full-Stack SaaS",
+    tagline: "Urdu-first web experiences without broken typography.",
+    description:
+      "Tooling and product surfaces for building readable, production-grade Urdu web experiences with correct typography and layout behavior.",
+    features: ["Urdu typography and layout tooling", "RTL-aware interface patterns"],
+    stack: ["Next.js", "TypeScript", "CSS"],
+    results: [],
+    link: null,
+    featured: false,
+    status: "internal",
+    surface: "web",
+    image: null,
+    visualTreatment: "multi-panel",
+  },
+  {
+    slug: "legal-rag-assistant",
+    title: "Legal RAG Assistant",
+    type: "AI System",
+    category: "RAG",
+    tagline: "Document-grounded answers for legal research workflows.",
+    description:
+      "A retrieval-augmented generation system that answers from a controlled legal document corpus with citations and guardrails against unsupported claims.",
+    features: ["Private document ingestion and indexing", "Citation-backed retrieval answers"],
+    stack: ["Python", "LangChain", "Vector DB", "LLMs"],
+    results: [],
+    link: null,
+    featured: false,
+    status: "proprietary",
+    surface: "web",
+    image: null,
+    visualTreatment: "ai-pipeline",
+  },
+  {
+    slug: "recommendation-engine",
+    title: "Amazon-Scale Recommendation Engine",
+    type: "ML System",
+    category: "AI Products",
+    tagline: "Recommendation pipelines for large catalog surfaces.",
+    description:
+      "A recommendation system architecture designed for large product catalogs — candidate generation, ranking, and evaluation loops oriented around real retrieval constraints.",
+    features: ["Candidate generation and ranking stages", "Offline evaluation harnesses"],
+    stack: ["Python", "ML Pipelines", "PostgreSQL", "Redis"],
+    results: [],
+    link: null,
+    featured: false,
+    status: "research",
+    surface: "web",
+    image: null,
+    visualTreatment: "technical",
+  },
+  {
+    slug: "video-frame-prediction",
+    title: "Video Frame Prediction",
+    type: "Research System",
+    category: "AI Products",
+    tagline: "Predicting future frames from temporal visual context.",
+    description:
+      "A research-grade video frame prediction system exploring temporal models that forecast upcoming frames from prior visual context.",
+    features: ["Temporal frame prediction models", "Training and evaluation pipelines"],
+    stack: ["Python", "PyTorch", "Computer Vision"],
+    results: [],
+    link: null,
+    featured: false,
+    status: "research",
+    surface: "web",
+    image: null,
+    visualTreatment: "technical",
+  },
+  {
+    slug: "ai-medical-diagnostic-chatbot",
+    title: "AI Medical Diagnostic Chatbot",
+    type: "AI Product",
+    category: "AI Products",
+    tagline: "Structured clinical dialogue with constrained outputs.",
+    description:
+      "A medical diagnostic conversation system designed for structured intake and constrained recommendations — with clear boundaries around clinical decision support.",
+    features: ["Structured diagnostic dialogue flows", "Constrained model outputs for safety"],
+    stack: ["Python", "LLMs", "RAG", "Next.js"],
+    results: [],
+    link: null,
+    featured: false,
+    status: "proprietary",
+    surface: "web",
+    image: null,
+    visualTreatment: "ai-pipeline",
+  },
+  {
+    slug: "secure-distributed-data-platform",
+    title: "Secure Distributed Data Platform",
+    type: "Infrastructure",
+    category: "Full-Stack SaaS",
+    tagline: "Air-gapped data infrastructure for constrained environments.",
+    description:
+      "A secure distributed data platform engineered for air-gapped and high-constraint environments where public cloud assumptions do not apply. Client identity and private endpoints are not disclosed.",
+    features: [
+      "Air-gapped / constrained-network deployment",
+      "Distributed data services with isolation controls",
+    ],
+    stack: ["Distributed Systems", "PostgreSQL", "Containers"],
+    results: [],
+    link: null,
+    featured: false,
+    status: "proprietary",
+    surface: "web",
+    image: null,
+    visualTreatment: "technical",
+  },
+  {
+    slug: "deepfake-detection",
+    title: "Deepfake Detection",
+    type: "ML System",
+    category: "AI Products",
+    tagline: "Detecting synthetic media with model-backed signals.",
+    description:
+      "A deepfake detection system that inspects media for synthetic artifacts and surfaces model-backed confidence signals for human review.",
+    features: ["Media ingestion and preprocessing", "Model-backed synthetic media signals"],
+    stack: ["Python", "Computer Vision", "ML Inference"],
+    results: [],
+    link: null,
+    featured: false,
+    status: "research",
+    surface: "web",
+    image: null,
+    visualTreatment: "technical",
+  },
+  {
+    slug: "rustagaari-resort",
+    title: "Rustagaari Resort Management",
+    type: "Desktop Application",
+    category: "Full-Stack SaaS",
+    tagline: "Offline-first resort operations on the desktop.",
+    description:
+      "An offline-first resort management desktop application with reservation calendars, invoicing, and local SQLite persistence.",
+    features: ["Interactive room reservation calendar", "Automated invoicing", "Local SQLite offline database"],
+    stack: ["Electron", "Express.js", "SQLite"],
+    results: [],
+    link: null,
+    featured: false,
+    status: "internal",
+    surface: "web",
+    image: "/images/resort_main.png",
     visualTreatment: "photo",
   },
 ];
@@ -252,19 +475,30 @@ export const WORK_FILTERS = [
 
 export type WorkFilter = (typeof WORK_FILTERS)[number];
 
+const isLive = (p: Project) => Boolean(p.link);
+
 export function getProjectVisual(project: Project): string | null {
   return project.image || project.visual || project.previewImage || null;
 }
 
+export function getProjectGallery(project: Project): string[] {
+  if (project.gallery?.length) return project.gallery;
+  const one = getProjectVisual(project);
+  return one ? [one] : [];
+}
+
+/** Featured carousel — live + featured only. */
 export function getFeaturedProjects(): Project[] {
-  return projects.filter((p) => p.featured);
+  return projects.filter((p) => p.featured && isLive(p));
 }
 
 export function getProjectBySlug(slug: string): Project | undefined {
-  return projects.find((p) => p.slug === slug);
+  return projects.find((p) => p.slug === slug && isLive(p));
 }
 
+/** More-work list / filters — live only. */
 export function getProjectsByFilter(filter: WorkFilter): Project[] {
-  if (filter === "All") return projects;
-  return projects.filter((p) => p.category === filter);
+  const live = projects.filter(isLive);
+  if (filter === "All") return live;
+  return live.filter((p) => p.category === filter);
 }

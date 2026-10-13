@@ -136,7 +136,7 @@ export function Header() {
 
           <div className="flex items-center gap-2">
             <a
-              href="mailto:the.lunox.co@gmail.com"
+              href="mailto:the.lunox.co@gmail.com?subject=Book%20a%20call%20with%20Lunox"
               className={`hidden items-center rounded-full px-5 py-2.5 text-[14px] font-medium transition-all duration-300 hover:scale-[1.03] sm:inline-flex ${cta}`}
             >
               Book a Call
@@ -195,7 +195,7 @@ export function Header() {
                 </a>
               ))}
               <div className="mt-8">
-                <PillButton href="mailto:the.lunox.co@gmail.com" label="Book a Call" tone="glass" size="md" magnetic={false} />
+                <PillButton href="mailto:the.lunox.co@gmail.com?subject=Book%20a%20call%20with%20Lunox" label="Book a Call" tone="glass" size="md" magnetic={false} />
               </div>
             </nav>
           </motion.div>

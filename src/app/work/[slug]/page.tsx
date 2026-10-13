@@ -12,7 +12,7 @@ import { Footer } from "@/components/Footer";
 type Props = { params: { slug: string } };
 
 export function generateStaticParams() {
-  return projects.map((p) => ({ slug: p.slug }));
+  return projects.filter((p) => p.link).map((p) => ({ slug: p.slug }));
 }
 
 export function generateMetadata({ params }: Props): Metadata {
@@ -50,7 +50,13 @@ export default function WorkDetailPage({ params }: Props) {
             {project.tagline}
           </p>
 
-          <div className="mb-16 aspect-[4/3] max-w-5xl overflow-hidden rounded-[22px] border border-ink/10 shadow-[0_40px_90px_-40px_rgba(17,19,24,0.5)] sm:aspect-[16/10] md:rounded-[28px]">
+          <div
+            className={`mb-16 max-w-5xl overflow-hidden rounded-[22px] border border-ink/10 shadow-[0_40px_90px_-40px_rgba(17,19,24,0.5)] md:rounded-[28px] ${
+              project.surface === "mobile"
+                ? "aspect-[4/5] sm:aspect-[4/3]"
+                : "aspect-[4/3] sm:aspect-[16/10]"
+            }`}
+          >
             <ProductVisual project={project} variant="detail" />
           </div>
 
@@ -129,8 +135,13 @@ export default function WorkDetailPage({ params }: Props) {
                 </div>
 
                 {project.link ? (
-                  <PillButton href={project.link} label="Visit product" tone="solid" size="md" external />
-                
+                  <PillButton
+                    href={project.link}
+                    label={project.surface === "mobile" ? "Get on Google Play" : "Visit product"}
+                    tone="solid"
+                    size="md"
+                    external
+                  />
                 ) : (
                   <p className="rounded-btn border border-light-border px-4 py-3 text-center text-[13px] text-ink-muted">
                     {project.status === "proprietary"

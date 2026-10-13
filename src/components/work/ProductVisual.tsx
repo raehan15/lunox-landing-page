@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { CSSProperties, ReactNode } from "react";
-import { Project, getProjectVisual } from "@/data/projects";
+import { Project, getProjectGallery, getProjectVisual } from "@/data/projects";
 
 /**
  * Product compositions. All sizes are in container units so one component
@@ -341,6 +341,104 @@ function Moqah() {
   );
 }
 
+/* ---------- Kitab Bot: textbook tutor — board pick, question, cited page ---------- */
+function KitabBot() {
+  const boards = ["FBISE", "Punjab", "Edexcel", "Cambridge"];
+  const prompts = ["Explain mitosis", "What is photosynthesis?", "Define homeostasis"];
+  return (
+    <div className="absolute inset-0 overflow-hidden bg-[#f3f0e8]">
+      <div
+        className="absolute inset-0 opacity-80"
+        style={{
+          background:
+            "radial-gradient(50% 45% at 20% 15%, rgba(49,91,255,0.08), transparent 70%), radial-gradient(40% 40% at 90% 80%, rgba(34,120,70,0.1), transparent 70%)",
+        }}
+      />
+      {/* Browser / product shell */}
+      <div className="absolute left-[6%] top-[7%] h-[86%] w-[88%]" style={layer(5)}>
+        <div className="flex h-full flex-col overflow-hidden rounded-[1.8cqw] border border-ink/10 bg-[#faf8f3] shadow-[0_30px_60px_-28px_rgba(17,19,24,0.4)]">
+          <div className="flex items-center gap-[0.7cqw] border-b border-ink/5 bg-white/80 px-[1.6cqw] py-[1cqw]">
+            {[0, 1, 2].map((i) => (
+              <span key={i} className="h-[1cqw] w-[1cqw] rounded-full bg-ink/15" />
+            ))}
+            <span className="ml-[1cqw] flex-1 rounded-[0.6cqw] bg-[#f3f0e8] px-[1.2cqw] py-[0.4cqw] text-[max(8px,1.15cqw)] text-ink-muted">
+              kitabbot.fly.dev
+            </span>
+          </div>
+          <div className="relative flex flex-1 flex-col overflow-hidden p-[2cqw]">
+            {/* Lined notebook texture */}
+            <div
+              className="pointer-events-none absolute inset-0 opacity-40"
+              style={{
+                backgroundImage:
+                  "linear-gradient(rgba(49,91,255,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(220,60,60,0.35) 1.5px, transparent 1.5px)",
+                backgroundSize: "100% 2.4cqw, 100% 100%",
+                backgroundPosition: "0 1.2cqw, 8% 0",
+              }}
+            />
+            <div className="relative z-10 mb-[1.4cqw]">
+              <p className="mb-[0.4cqw] text-[max(11px,2cqw)] font-semibold tracking-tight text-ink">
+                Ask from your textbook
+              </p>
+              <p className="text-[max(8px,1.2cqw)] text-ink-muted">Exact answers from that book, with the page.</p>
+            </div>
+            <div className="relative z-10 mb-[1.4cqw] flex flex-wrap gap-[0.6cqw]">
+              {boards.map((b, i) => (
+                <span
+                  key={b}
+                  className={`rounded-full px-[1.2cqw] py-[0.45cqw] text-[max(7px,1.1cqw)] font-medium ${
+                    i === 1 ? "bg-[#1f5c3a] text-white" : "bg-white/80 text-ink-muted ring-1 ring-ink/10"
+                  }`}
+                >
+                  {b}
+                </span>
+              ))}
+              <span className="rounded-full bg-[#1f5c3a] px-[1cqw] py-[0.45cqw] text-[max(7px,1.1cqw)] font-medium text-white">
+                Class 9 · Biology
+              </span>
+            </div>
+            <div className="relative z-10 mb-[1.6cqw] flex flex-wrap gap-[0.7cqw]">
+              {prompts.map((q, i) => (
+                <span
+                  key={q}
+                  className={`rounded-[1cqw] border bg-white px-[1.3cqw] py-[0.8cqw] text-[max(8px,1.2cqw)] text-ink shadow-sm ${
+                    i === 0 ? "border-[#1f5c3a]/40" : "border-ink/8"
+                  }`}
+                >
+                  {q}
+                </span>
+              ))}
+            </div>
+            <div className="relative z-10 mt-auto flex items-center gap-[1cqw] rounded-full border border-ink/10 bg-white px-[1.4cqw] py-[1cqw] shadow-sm">
+              <span className="text-[max(8px,1.2cqw)] text-ink-muted">Ask from this textbook…</span>
+              <span className="ml-auto rounded-full bg-accent px-[1.4cqw] py-[0.55cqw] text-[max(8px,1.15cqw)] font-medium text-white">
+                Ask →
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Citation card */}
+      <div className="absolute bottom-[10%] right-[5%] w-[38%]" style={layer(18)}>
+        <div className="rounded-[1.6cqw] border border-white/10 bg-[#0f1712] p-[1.8cqw] shadow-[0_24px_50px_-20px_rgba(5,7,11,0.7)]">
+          <div className="mb-[1cqw] flex items-center justify-between">
+            <span className="font-mono text-[max(7px,1.05cqw)] uppercase tracking-widest text-white/45">Cited page</span>
+            <span className="rounded-full bg-accent/20 px-[1cqw] py-[0.3cqw] font-mono text-[max(8px,1.15cqw)] text-accent">
+              p. 142
+            </span>
+          </div>
+          <p className="mb-[0.8cqw] text-[max(9px,1.4cqw)] font-medium text-white">Mitosis</p>
+          <Bar w="92%" className="mb-[0.5cqw] bg-white/25" />
+          <Bar w="78%" className="mb-[0.5cqw] bg-white/15" />
+          <Bar w="64%" className="bg-white/10" />
+          <p className="mt-[1.2cqw] font-mono text-[max(7px,1.05cqw)] text-white/40">Punjab · Biology · Class 9</p>
+        </div>
+      </div>
+      <MockTag />
+    </div>
+  );
+}
+
 /* ---------- Generic treatments for the rest of the catalogue ---------- */
 function Generic({ project }: { project: Project }) {
   const t = project.visualTreatment;
@@ -418,7 +516,61 @@ function Generic({ project }: { project: Project }) {
   );
 }
 
+/* ---------- Mobile apps: same stage card, phone frames with real screenshots ---------- */
+function MobileStage({ project, variant }: { project: Project; variant: Variant }) {
+  const shots = getProjectGallery(project).slice(0, 3);
+  const sizes =
+    variant === "stage"
+      ? "(max-width: 768px) 55vw, (max-width: 1280px) 28vw, 360px"
+      : "(max-width: 768px) 40vw, 220px";
+
+  return (
+    <div className="absolute inset-0 overflow-hidden bg-[#07111f]">
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(55% 60% at 50% 35%, rgba(74,108,255,0.35), transparent 70%), radial-gradient(40% 40% at 85% 80%, rgba(120,70,255,0.22), transparent 70%)",
+        }}
+      />
+      <div className="absolute inset-0 flex items-end justify-center gap-[2.2cqw] px-[4%] pb-[5%] pt-[8%]">
+        {shots.map((src, i) => {
+          const mid = i === Math.floor((shots.length - 1) / 2) || shots.length === 1;
+          const tilt = shots.length === 1 ? 0 : i === 0 ? -8 : i === shots.length - 1 ? 8 : 0;
+          return (
+            <div
+              key={src}
+              className={`relative h-full overflow-hidden rounded-[3.2cqw] border border-white/15 bg-[#0b1220] shadow-[0_30px_60px_-24px_rgba(0,0,0,0.75)] ${
+                mid ? "z-10 w-[34%]" : "z-0 w-[28%] opacity-95"
+              }`}
+              style={{
+                ...layer(mid ? 6 : 14 + i * 4),
+                transform: `rotate(${tilt}deg) translateY(${mid ? "0" : "6%"})`,
+              }}
+            >
+              <div className="absolute left-1/2 top-[2%] z-10 h-[1.6%] w-[28%] -translate-x-1/2 rounded-full bg-black/80" />
+              <Image
+                src={src}
+                alt=""
+                fill
+                className="object-cover object-top"
+                sizes={sizes}
+                quality={variant === "card" ? 55 : 70}
+                loading={variant === "stage" ? "eager" : "lazy"}
+              />
+            </div>
+          );
+        })}
+      </div>
+      <span className="absolute bottom-[3cqw] left-[3cqw] z-20 rounded-full bg-white/10 px-[1.6cqw] py-[0.6cqw] font-mono text-[max(9px,1.3cqw)] uppercase tracking-[0.12em] text-white/60">
+        Mobile app
+      </span>
+    </div>
+  );
+}
+
 const COMPOSITIONS: Record<string, () => ReactNode> = {
+  kitabbot: () => <KitabBot />,
   tattoovisionai: () => <TattooVision />,
   "hirey-ai": () => <HireyAI />,
   estimatrix: () => <Estimatrix />,
@@ -436,6 +588,7 @@ export function ProductVisual({
 }) {
   const src = getProjectVisual(project);
   const compose = COMPOSITIONS[project.slug];
+  const isMobile = project.surface === "mobile" && getProjectGallery(project).length > 0;
 
   return (
     <div
@@ -444,7 +597,11 @@ export function ProductVisual({
       data-variant={variant}
       aria-hidden
     >
-      {src ? (
+      {isMobile ? (
+        <MobileStage project={project} variant={variant} />
+      ) : compose ? (
+        compose()
+      ) : src ? (
         <div className="absolute inset-0 bg-[#e9e6df]">
           <div className="absolute inset-[6%] overflow-hidden rounded-[1.4cqw] shadow-[0_30px_60px_-30px_rgba(17,19,24,0.5)]" style={layer(8)}>
             <Image
@@ -452,12 +609,12 @@ export function ProductVisual({
               alt=""
               fill
               className="object-cover object-top"
-              sizes={variant === "stage" ? "(max-width: 1024px) 100vw, 60vw" : "(max-width: 768px) 100vw, 480px"}
+              sizes={variant === "stage" ? "(max-width: 1024px) 100vw, 60vw" : "(max-width: 768px) 40vw, 480px"}
+              quality={variant === "card" ? 55 : 72}
+              loading={variant === "stage" ? "eager" : "lazy"}
             />
           </div>
         </div>
-      ) : compose ? (
-        compose()
       ) : (
         <Generic project={project} />
       )}
